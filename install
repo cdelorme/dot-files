@@ -89,7 +89,7 @@ then
     # Echo status
     echo "downloading vim plugins..."
 
-    # Download vim colorscheme (vividchalk)
+    # Download (vividchalk) colorscheme direclty
     $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.github.com/tpope/vim-vividchalk/master/colors/vividchalk.vim"
 
     if which unzip &> /dev/null
