@@ -15,16 +15,15 @@ DOWNLOADS="$SELF_PATH/downloads"
 # Check for wget or curl to download all files
 if which curl &> /dev/null
 then
-    DL_CMD="curl -o"
+    DL_CMD="curl -L -o"
 elif which wget &> /dev/null
 then
     DL_CMD="wget -O"
 fi
 
 # Create dependent folders
-mkdir -p "$DOWNLOADS/.vim/colors" &> /dev/null
 mkdir -p "$DOWNLOADS/.vim/undo" &> /dev/null
-
+mkdir -p "$DOWNLOADS/.vim/colors" &> /dev/null
 
 # Check for git
 if which git &> /dev/null
@@ -78,38 +77,38 @@ then
     # Echo status
     echo "downloading vim plugins..."
 
-    # Download (vividchalk) colorscheme direclty
-    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.github.com/tpope/vim-vividchalk/master/colors/vividchalk.vim"
+    # Download (vividchalk) colorscheme directly
+    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.github.com/tpope/vim-vividchalk/master/colors/vividchalk.vim" &> /dev/null
 
     if which unzip &> /dev/null
     then
 
         # Download the zipped packages
-        $DL_CMD "$DOWNLOADS/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip"
-        $DL_CMD "$DOWNLOADS/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip"
-        $DL_CMD "$DOWNLOADS/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip"
-        $DL_CMD "$DOWNLOADS/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip"
+        $DL_CMD "$DOWNLOADS/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip" &> /dev/null
+        $DL_CMD "$DOWNLOADS/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip" &> /dev/null
+        $DL_CMD "$DOWNLOADS/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip" &> /dev/null
+        $DL_CMD "$DOWNLOADS/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip" &> /dev/null
 
         # Download our own repo if no src/
         if [ ! -d "src/" ]
         then
-            $DL_CMD "$DOWNLOADS/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip"
+            $DL_CMD "$DOWNLOADS/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip" &> /dev/null
         fi
 
         # Decompress Packages into predictable folder names and copy contents to .vim
         for ZIP in "$DOWNLOADS/"*.zip
         do
             UNZIP_TO=${ZIP%*.zip}
-            unzip -d $UNZIP_TO $ZIP
-            UNZIP_CONTENTS=$UNZIP_TO/*
-            if [ ${#UNZIP_CONTENTS[*]} -eq 1 ] && []
+            unzip -q -o -d $UNZIP_TO $ZIP &> /dev/null
+            UNZIP_CONTENTS=($UNZIP_TO/*)
+            if [ ${#UNZIP_CONTENTS[*]} -eq 1 ] && [ -d "$UNZIP_CONTENTS" ]
             then
 
-                if [ "$UNZIP_CONTENTS" = "src" ]
+                if [ -d "$UNZIP_CONTENTS/src" ]
                 then
 
                     # Copy src contents to downloads
-                    cp -Rf "$UNZIP_CONTENTS/src/"* "$DOWNLOADS/"
+                    cp -Rf "$UNZIP_CONTENTS/src/" "$DOWNLOADS"
                 else
 
                     # Copy sub-directory contents to .vim
@@ -123,7 +122,7 @@ then
 
             # Delete the ZIP file and folder we extracted it to
             rm -rf $ZIP
-            rm -rf $ZIP_TO
+            rm -rf $UNZIP_TO
         done
     fi
 fi
