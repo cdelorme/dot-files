@@ -1,0 +1,243 @@
+#!/bin/bash
+#~/.promptrc
+
+# Author: Casey DeLorme
+# Date: 12-30-2013
+# Description: Entirely rewritten bash PS1 enhancer targeting git repositories, fully extendable
+# License: GPLv3+
+
+### Instructions!
+# Toggle with Booleans:
+#  Turn enhanced prompt off with `ENHANCED_PROMPT`
+#  Turn on/off with `GIT_PROMPT_ON`
+#  Turn Details on/off with `GIT_PROMPT_DETAILED`
+#  Turn prompt messages on/off with `PROMPT_MESSAGES_ON`
+#
+#   These variables can be defined in your bashrc for semi-permanent functionality.
+#
+# Extend with Array (called at tail of prompt output):
+#  ENHANCERS+=('newFunctionName')
+#
+
+# Define color functions for enhanced terminal aesthetics
+c_bold=`tput bold`
+c_red=`tput setaf 1`
+c_green=`tput setaf 2`
+c_blue=`tput setaf 4`
+c_purple=`tput setaf 5`
+c_cyan=`tput setaf 6`
+c_sgr0=`tput sgr0`
+
+# Define enhancers for easy future-external customization
+export ENHANCERS=('gitify')
+
+# Add git information if applicable
+gitify ()
+{
+
+    # Check GIT_PROMPT_ON before running git status check
+    if $GIT_PROMPT_ON
+    then
+
+        # Grab the stats (or parse the error)
+        git_stats=$( { time git status 2>&1; } 2>&1 )
+
+        # If no error, we are in a git repo
+        if [ $? -eq 0 ]
+        then
+
+            # If not set, use a default for time limit to slow git (user can adjust as needed)
+            if [ -z "$git_limit" ]
+            then
+                git_limit=1
+            fi
+
+            # Grab active branch
+            git_branch=$(echo "$git_stats" | sed -n 's/.*On branch \(.*\)/\1/p')
+
+            # Check whether there is anything to commit
+            if echo "$git_stats" | grep "nothing to commit" &> /dev/null
+            then
+
+                # Set a green color and finish the prompt
+                prompt_string="$prompt_string [${c_green}${git_branch}${c_sgr0}]"
+
+            else
+
+                # Open the prompt with red for the branch
+                prompt_string="$prompt_string [${c_red}${git_branch}: ${c_sgr0}"
+
+                # Check for our flag to display detailed prompt information
+                if $GIT_PROMPT_DETAILED
+                then
+
+                    #### Do advanced string-mathing
+                    #
+                    # After the branch, display untracked, modified, and deleted:
+                    #  Format: u#,m#/#,d#/#
+                    #   First and second for modified & deleted are staged, and unstaged (staged will be in green)
+                    #
+                    # Uses grep -w to identify counts with regex patterns
+
+                    # Define simple strings to id & track detailed git status components
+                    unstaged_line="Changes not staged for commit:"
+                    untracked_line="Untracked files:"
+                    modified_prefix="^\tmodified:\(.*\)"
+                    deleted_prefix="^\tdeleted:\(.*\)"
+                    untracked_prefix="^\t\(.*\)"
+
+                    # Assume none for each value
+                    modified_unstaged_count=0
+                    deleted_unstaged_count=0
+                    modified_staged_count=0
+                    deleted_staged_count=0
+                    untracked_count=0
+
+                    # If untracked files, grab a count
+                    if echo "$git_stats" | grep "$untracked_line" &> /dev/null
+                    then
+                        untracked_count=$(echo "${git_stats#*$untracked_line}" | grep -w "$untracked_prefix" | wc -l | tr -d ' ')
+                    fi
+
+                    # Look for unstaged files to parsed both, or just grab modified & deleted as staged
+                    if echo "$git_stats" | grep -w "$unstaged_line" &> /dev/null
+                    then
+
+                        # Grab unstaged modified
+                        modified_unstaged_count=$(echo "${git_stats#*$unstaged_line}" | grep -w "$modified_prefix" | wc -l | tr -d ' ')
+
+                        # Grab unstaged deleted
+                        deleted_unstaged_count=$(echo "${git_stats#*$unstaged_line}" | grep -w "$deleted_prefix" | wc -l | tr -d ' ')
+
+                        # Grab staged modified
+                        modified_staged_count=$(echo "${git_stats%$unstaged_line*}" | grep -w "$modified_prefix" | wc -l | tr -d ' ')
+
+                        # Grab staged deleted
+                        deleted_staged_count=$(echo "${git_stats%$unstaged_line*}" | grep -w "$deleted_prefix" | wc -l | tr -d ' ')
+                    else
+
+                        # Grab staged modified
+                        modified_staged_count=$(echo "$git_stats" | grep -w "$modified_prefix" | wc -l | tr -d ' ')
+
+                        # Grab staged deleted
+                        deleted_staged_count=$(echo "$git_stats" | grep -w "$deleted_prefix" | wc -l | tr -d ' ')
+                    fi
+
+                    # Now we assemble the prompt string (inline conditions to reduce reading)
+
+                    # Check Untracked
+                    [ $untracked_count -gt 0 ] && prompt_string="$prompt_string ${c_red}u${untracked_count}${c_sgr0}"
+
+                    # Check for modified staged or unstaged to add prefix
+                    [ $modified_unstaged_count -gt 0 ] || [ $modified_staged_count -gt 0 ] && prompt_string="$prompt_string ${c_red}m${c_sgr0}"
+
+                    # Check for modified unstaged
+                    [ $modified_unstaged_count -gt 0 ] && prompt_string="$prompt_string${c_red}${modified_unstaged_count}${c_sgr0}"
+
+                    # Check for unstaged and staged modified to add divider
+                    [ $modified_unstaged_count -gt 0 ] && [ $modified_staged_count -gt 0 ] && prompt_string="$prompt_string/"
+
+                    # Check for modified staged
+                    [ $modified_staged_count -gt 0 ] && prompt_string="$prompt_string${c_green}${modified_staged_count}${c_sgr0}"
+
+                    # Check for deleted staged or unstaged to add prefix
+                    [ $deleted_unstaged_count -gt 0 ] || [ $deleted_staged_count -gt 0 ] && prompt_string="$prompt_string ${c_red}d${c_sgr0}"
+
+                    # Check for deleted unstaged
+                    [ $deleted_unstaged_count -gt 0 ] && prompt_string="$prompt_string${c_red}${deleted_unstaged_count}${c_sgr0}"
+
+                    # Check for staged and unstaged deleted to add divider
+                    [ $deleted_unstaged_count -gt 0 ] && [ $deleted_staged_count -gt 0 ] && prompt_string="$prompt_string/"
+
+                    # Check for deleted staged
+                    [ $deleted_staged_count -gt 0 ] && prompt_string="$prompt_string${c_green}${deleted_staged_count}${c_sgr0}"
+
+                else
+
+                    # Grab number of changed files
+                    git_changes=$(echo "$git_stats" | grep "#\t" | wc -l | tr -d ' ')
+
+                    # Append changes to prompt
+                    prompt_string="${prompt_string} ${c_red}${git_changes}${c_sgr0}"
+
+                fi
+
+                # Close branch container
+                prompt_string="$prompt_string]"
+
+            fi
+
+            # Determine time to process git status and check limits for help message
+            git_time=$(echo "$git_stats" | sed -n 's/^r: \([0-9]*.[0-9]*\).*/\1/p')
+            git_slow=$(echo "$git_time >= $git_limit" | bc)
+
+            if [ $git_slow -eq 1 ]
+            then
+                # Define messages
+                $prompt_messages="$prompt_messages\nGit responded very slowly so we have turned off git prompt enhancements."
+                $prompt_messages="$prompt_messages\nYou can try running git \`gc && git repack -a -d --depth=250 --window=250\`"
+                $prompt_messages="$prompt_messages\nOtherwise you can increase/unset git_limit, and set GIT_PROMPT_ON"
+
+                # unset git prompt to prevent really slow shell interaction
+                GIT_PROMPT_ON=false
+            fi
+        fi
+    fi
+}
+
+# Create a colorful detailed prompt
+colorify ()
+{
+    # Confirm enhanced prompt
+    if $ENHANCED_PROMPT
+    then
+
+        # Shorter time format (not exported so as to not override yours)
+        TIMEFORMAT='r: %R, u: %U, s: %S'
+
+        # If OS X 10.* (uname = Darwin) don't display milliseconds (modern linux/unix only)
+        if [ $(uname) = "Darwin" ]
+        then
+            prompt_string="${c_blue}${0} ($(date +'%R:%S')) ${c_purple}$(whoami)${c_sgr0}@${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
+        else
+            prompt_string="${c_blue}${0} ($(date +'%R:%S.%3N')) ${c_purple}$(whoami)${c_sgr0}@${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
+        fi
+
+        # Run through Enhancers
+        for ENHANCEMENT in ${ENHANCERS[*]}
+        do
+            if [ $(type -t $ENHANCEMENT) = 'function' ]
+            then
+                $ENHANCEMENT
+            fi
+        done
+
+        # Output custom prompt
+        echo -ne "\n$prompt_string"
+
+        # Append prompt messages
+        if [ -n "$prompt_messages" ] && $PROMPT_MESSAGES_ON
+        then
+            echo -ne "\n${c_red}${prompt_messages}${c_sgr0}"
+        fi
+
+        # Start prompt on new line
+        echo -ne "\n$ "
+    else
+
+        # Reset prompt to the original if it was ever modified
+        if [ -n "${PSORIG}" ]
+        then
+            PS1=${PSORIG}
+        fi
+    fi
+}
+
+# Grab the original
+PSORIG=${PS1}
+
+# By wrapping in single quotes we allow the command execution to be parsed only when requested
+PS1='$(colorify)'
+
+# When entering multi-line commands our prompt will be more sensible
+PS2='continue-> '

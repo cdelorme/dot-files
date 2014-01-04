@@ -90,5 +90,5 @@ fi
 if [ -f "$HOME/.git-completion" ]
 then
     . "$HOME/.git-completion"
-fi 
+fi
 

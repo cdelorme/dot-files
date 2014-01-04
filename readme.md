@@ -40,3 +40,11 @@ Any downloaded files will be placed next to the script in `downloads/`.  Simply 
 
 You may consider [remapping capslock](http://c2.com/cgi/wiki?RemapCapsLock), since nobody really uses that key anymore.
 
+
+## Planned Features
+
+- Git Prompt deatiled output is a work-in-progress and is missing support for some statuses
+- It should be possible to map ctrl/cmd+v to auto-trigger `:set paste` and `:set nopaste` from insert mode
+- Support for a shared clipboard with vim would also be nice
+
+
