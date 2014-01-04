@@ -36,3 +36,7 @@ It will attempt to download any missing files over the network.
 Any downloaded files will be placed next to the script in `downloads/`.  Simply delete the folder (or its contents) to download a fresh copy if you run it again at a later time.
 
 
+## Additional Tips
+
+You may consider [remapping capslock](http://c2.com/cgi/wiki?RemapCapsLock), since nobody really uses that key anymore.
+
