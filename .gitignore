@@ -1,0 +1,7 @@
+
+# Ignore Mac Files
+.DS_Store
+
+# Ignore downloads files (except .gitignore to keep folder)
+downloads/*
+!downloads/.gitignore
