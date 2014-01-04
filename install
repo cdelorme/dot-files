@@ -3,36 +3,159 @@
 # Get script info
 if [ $(uname) = "Darwin" ]
 then
-    SELF="$(cd $(dirname $0) && pwd -P)/$(basename $0)"
+    SELF="$(cd $(dirname "$0") && pwd -P)/$(basename "$0")"
 else
-    SELF=$(readlink -f $0)
+    SELF=$(readlink -f "$0")
 fi
 SELF_PATH=$(dirname "$SELF")
-SELF_NAME=$(basename "$SELF")
 
-# Create dependent directories
-mkdir -p "$HOME/.vim/undo" &> /dev/null
+# Define downloads path
+DOWNLOADS="$SELF_PATH/downloads"
 
-# Check for src folder
+# Check for wget or curl to download all files
+if which wget &> /dev/null
+then
+    DL_CMD="wget -O"
+elif which curl &> /dev/null
+then
+    DL_CMD="curl -o"
+fi
+
+# Create dependent folders
+mkdir -p "$DOWNLOADS/.vim/colors" &> /dev/null
+mkdir -p "$DOWNLOADS/.vim/undo" &> /dev/null
+
+# If /src exists copy it to downloads else begin downloading the files from github
 if [ -d "src/" ]
 then
 
     # Copy all dot files to user home
-    cp -R "src/" "$HOME" &> /dev/null
+    cp -R "src/" "$DOWNLOADS" &> /dev/null
 
     # Set permissions on .ssh to 600 for "strict" ssh settings
-    chmod -R 0600 "$HOME/.ssh" &> /dev/null
-
-    # Copy to /etc/skel if able & made same chmod on .ssh
-    if [ -d "/etc/skel" ]
-    then
-        cp -R "src/" "etc/skel" &> /dev/null
-        chmod -R 0600 "/etc/skel/.ssh" &> /dev/null
-    fi
-
-else
-
-    # Check for wget or curl to download all files
-
+    chmod -R 0600 "$DOWNLOADS/.ssh" &> /dev/null
 fi
 
+# Check for git
+if which git &> /dev/null
+then
+
+    # Echo status
+    echo "cloning vim plugin repositories..."
+
+    # Check for src/
+    if [ ! -d "src/" ]
+    then
+
+        # Clone our own repo to grab the files
+        git clone "https://github.com/cdelorme/dot-files" "$DOWNLOADS/dot-files" &> /dev/null
+
+        # Copy all dot files to user home
+        cp -R "$DOWNLOADS/dot-files/src/" "$DOWNLOADS" &> /dev/null
+
+        # Set permissions on .ssh to 600 for "strict" ssh settings
+        chmod -R 0600 "$DOWNLOADS/.ssh" &> /dev/null
+
+        # Remove the repo
+        rm -rf "$DOWNLOADS/dot-files" &> /dev/null
+    fi
+
+    # Clone all repositories
+    git clone "https://github.com/tpope/vim-vividchalk" "$DOWNLOADS/vividchalk" &> /dev/null
+    git clone "https://github.com/tristen/vim-sparkup" "$DOWNLOADS/sparkup" &> /dev/null
+    git clone "https://github.com/Lokaltog/vim-easymotion" "$DOWNLOADS/easymotion" &> /dev/null
+    git clone "https://github.com/tpope/vim-surround" "$DOWNLOADS/surround" &> /dev/null
+    git clone "https://github.com/kien/ctrlp.vim" "$DOWNLOADS/ctrlp" &> /dev/null
+
+    # Install Vim Packages
+    cp -Rf "$DOWNLOADS/sparkup/*" "$DOWNLOADS/.vim/" &> /dev/null
+    cp -Rf "$DOWNLOADS/easymotion/*" "$DOWNLOADS/.vim/" &> /dev/null
+    cp -Rf "$DOWNLOADS/surround/*" "$DOWNLOADS/.vim/" &> /dev/null
+    cp -Rf "$DOWNLOADS/ctrlp/*" "$DOWNLOADS/.vim/" &> /dev/null
+
+    # Remove folders
+    rm -rf "$DOWNLOADS/sparkup" &> /dev/null
+    rm -rf "$DOWNLOADS/easymotion" &> /dev/null
+    rm -rf "$DOWNLOADS/surround" &> /dev/null
+    rm -rf "$DOWNLOADS/ctrlp" &> /dev/null
+
+    # Cleanup .vim (remove readme's)
+    rm "$DOWNLOADS/.vim/readme.md" &> /dev/null
+    rm "$DOWNLOADS/.vim/README.markdown" &> /dev/null
+
+elif [ -n "$DL_CMD" ]
+then
+
+    # Echo status
+    echo "downloading vim plugins..."
+
+    # Download vim colorscheme (vividchalk)
+    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.github.com/tpope/vim-vividchalk/master/colors/vividchalk.vim"
+
+    if which unzip &> /dev/null
+    then
+
+        # Download the zipped packages
+        $DL_CMD "$DOWNLOADS/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip"
+        $DL_CMD "$DOWNLOADS/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip"
+        $DL_CMD "$DOWNLOADS/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip"
+        $DL_CMD "$DOWNLOADS/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip"
+
+        # Download our own repo if no src/
+        if [ ! -d "src/" ]
+        then
+            $DL_CMD "$DOWNLOADS/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip"
+        fi
+
+        # Decompress Packages into predictable folder names and copy contents to .vim
+        for ZIP in "$DOWNLOADS/"*.zip
+        do
+            UNZIP_TO=${ZIP%*.zip}
+            unzip -d $UNZIP_TO $ZIP
+            UNZIP_CONTENTS=$UNZIP_TO/*
+            if [ ${#UNZIP_CONTENTS[*]} -eq 1 ] && []
+            then
+
+                if [ "$UNZIP_CONTENTS" = "src" ]
+                then
+
+                    # Copy src contents to downloads
+                    cp -Rf "$UNZIP_CONTENTS/src/"* "$DOWNLOADS/"
+                else
+
+                    # Copy sub-directory contents to .vim
+                    cp -Rf "$UNZIP_CONTENTS/"* "$DOWNLOADS/.vim/"
+                fi
+            else
+
+                # Copy contents to .vim
+                cp -Rf "$UNZIP_TO/"* "$DOWNLOADS/.vim/"
+            fi
+
+            # Delete the ZIP file and folder we extracted it to
+            rm -rf $ZIP
+            rm -rf $ZIP_TO
+        done
+    fi
+fi
+
+# Echo Status
+echo "installing dot files..."
+
+# Install the files to home
+cp -Rf "$DOWNLOADS/" "$HOME"
+
+# Also try to install them to /etc/skel if the path exists & adjust .ssh permissions
+if [ -d "/etc/skel" ]
+then
+    cp -Rf "$DOWNLOADS/" "/etc/skel" &> /dev/null
+fi
+
+# OS X uses ~/.profile not ~/.bashrc, so we want to add a line to tell it to load ~/.bashrc (but only once)
+if [ $(uname) = "Darwin" ] && ! grep ".bashrc" "$HOME/.profile" &> /dev/null
+then
+    echo '\n\nif [ -f "$HOME/.bashrc' ]\nthen\n\t. $HOME/.bashrc\nfi\n >> "$HOME/.profile"
+fi
+
+# Final Status
+echo "dot files are installed."
