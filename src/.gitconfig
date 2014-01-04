@@ -1,0 +1,18 @@
+[core]
+    editor = vim
+[help]
+    autocorrect = 1
+[color]
+    ui = true
+[alias]
+    a = add
+    s = status
+    c = commit
+    st = stash
+    sa = stash apply
+    l = !. ~/.githelpers && pretty_git_log
+    pp = !git pull && git push
+[push]
+    default = matching
+[remote "origin"]
+    push = HEAD
