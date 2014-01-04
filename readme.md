@@ -26,6 +26,13 @@ Executing as root or with sudo privileges will also throw a copy into `/etc/skel
 
 **The install script will overwrite any files with conflicting names.**
 
+#### Installer Requirements
+
+- must be executed from a directory you have write permissions on
+- remote install, vim plugins, and colorscheme require either git, or unzip and curl or wget
+
+_The script will fail silently, skipping any tasks it cannot perform._
+
 
 ### Automatic Downloads
 
