@@ -85,4 +85,10 @@ then
 fi
 
 # TODO Configure Prompt Addons
-# TODO Add Prompt Addons
+
+# Add Prompt Addons
+if [ -f "$HOME/.git-completion" ]
+then
+    . "$HOME/.git-completion"
+fi 
+
