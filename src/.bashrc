@@ -48,18 +48,18 @@ then
 fi
 
 # If no autostart dir exists create it
-if [ ! -d "~/.config/autostart" ];then
+if [ $(uname) != "Darwin" ] && [ ! -d "~/.config/autostart" ];then
     mkdir -p "~/.config/autostart"
 fi
 
 # If guake exists add it to startup items
-if which guake &> /dev/null && [ ! -f "$HOME/.config/autostart/guake.desktop" ] && [ -f "/usr/share/applications/guake.desktop" ]
+if [ $(uname) != "Darwin" ] && which guake &> /dev/null && [ ! -f "$HOME/.config/autostart/guake.desktop" ] && [ -f "/usr/share/applications/guake.desktop" ]
 then
     cp "/usr/share/applications/guake.desktop" "$HOME/.config/autostart/guake.desktop"
 fi
 
 # If sublime text is installed locally, makde sure a local subl exists
-if [ ! -f "$HOME/bin/subl" ] && [ -f "$HOME/applications/sublime_text/sublime_text" ];then
+if [ $(uname) != "Darwin" ] && [ ! -f "$HOME/bin/subl" ] && [ -f "$HOME/applications/sublime_text/sublime_text" ];then
     ln -s "$HOME/applications/sublime_text/sublime_text" "$HOME/bin/subl"
 fi
 
@@ -84,11 +84,17 @@ then
     XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.local/share"
 fi
 
-# TODO Configure Prompt Addons
+# Configure Prompt Addons
+export ENHANCED_PROMPT=true
+export GIT_PROMPT_ON=true
+export GIT_PROMPT_DETAILED=true
 
 # Add Prompt Addons
 if [ -f "$HOME/.git-completion" ]
 then
     . "$HOME/.git-completion"
 fi
-
+if [ -f "$HOME/.promptrc" ]
+then
+    . "$HOME/.promptrc"
+fi
