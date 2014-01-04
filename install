@@ -13,28 +13,18 @@ SELF_PATH=$(dirname "$SELF")
 DOWNLOADS="$SELF_PATH/downloads"
 
 # Check for wget or curl to download all files
-if which wget &> /dev/null
-then
-    DL_CMD="wget -O"
-elif which curl &> /dev/null
+if which curl &> /dev/null
 then
     DL_CMD="curl -o"
+elif which wget &> /dev/null
+then
+    DL_CMD="wget -O"
 fi
 
 # Create dependent folders
 mkdir -p "$DOWNLOADS/.vim/colors" &> /dev/null
 mkdir -p "$DOWNLOADS/.vim/undo" &> /dev/null
 
-# If /src exists copy it to downloads else begin downloading the files from github
-if [ -d "src/" ]
-then
-
-    # Copy all dot files to user home
-    cp -R "src/" "$DOWNLOADS" &> /dev/null
-
-    # Set permissions on .ssh to 600 for "strict" ssh settings
-    chmod -R 0600 "$DOWNLOADS/.ssh" &> /dev/null
-fi
 
 # Check for git
 if which git &> /dev/null
@@ -53,9 +43,6 @@ then
         # Copy all dot files to user home
         cp -R "$DOWNLOADS/dot-files/src/" "$DOWNLOADS" &> /dev/null
 
-        # Set permissions on .ssh to 600 for "strict" ssh settings
-        chmod -R 0600 "$DOWNLOADS/.ssh" &> /dev/null
-
         # Remove the repo
         rm -rf "$DOWNLOADS/dot-files" &> /dev/null
     fi
@@ -68,16 +55,18 @@ then
     git clone "https://github.com/kien/ctrlp.vim" "$DOWNLOADS/ctrlp" &> /dev/null
 
     # Install Vim Packages
-    cp -Rf "$DOWNLOADS/sparkup/*" "$DOWNLOADS/.vim/" &> /dev/null
-    cp -Rf "$DOWNLOADS/easymotion/*" "$DOWNLOADS/.vim/" &> /dev/null
-    cp -Rf "$DOWNLOADS/surround/*" "$DOWNLOADS/.vim/" &> /dev/null
-    cp -Rf "$DOWNLOADS/ctrlp/*" "$DOWNLOADS/.vim/" &> /dev/null
+    cp -Rf "$DOWNLOADS/sparkup/"* "$DOWNLOADS/.vim/" &> /dev/null
+    cp -Rf "$DOWNLOADS/easymotion/"* "$DOWNLOADS/.vim/" &> /dev/null
+    cp -Rf "$DOWNLOADS/surround/"* "$DOWNLOADS/.vim/" &> /dev/null
+    cp -Rf "$DOWNLOADS/ctrlp/"* "$DOWNLOADS/.vim/" &> /dev/null
+    cp -Rf "$DOWNLOADS/vividchalk/"* "$DOWNLOADS/.vim/" &> /dev/null
 
     # Remove folders
     rm -rf "$DOWNLOADS/sparkup" &> /dev/null
     rm -rf "$DOWNLOADS/easymotion" &> /dev/null
     rm -rf "$DOWNLOADS/surround" &> /dev/null
     rm -rf "$DOWNLOADS/ctrlp" &> /dev/null
+    rm -rf "$DOWNLOADS/vividchalk" &> /dev/null
 
     # Cleanup .vim (remove readme's)
     rm "$DOWNLOADS/.vim/readme.md" &> /dev/null
@@ -138,6 +127,20 @@ then
         done
     fi
 fi
+
+# If /src exists copy it to downloads else begin downloading the files from github
+if [ -d "src/" ]
+then
+
+    # Copy all dot files to user home
+    cp -R "src/" "$DOWNLOADS" &> /dev/null
+fi
+
+# Set 0700 on ~/.ssh so we can access its contents
+chmod 0700 "$DOWNLOADS/.ssh" &> /dev/null
+
+# Set 0600 on the contents for ssh "strict-mode" compatibility
+chmod 0600 "$DOWNLOADS/.ssh/"* &> /dev/null
 
 # Echo Status
 echo "installing dot files..."
