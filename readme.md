@@ -6,6 +6,18 @@ These are my dot files.  There are many like them, but these are mine.
 My install script and related are licensed under GPLv3, they will forever remain free to edit and modify provided you grant the same courtesy to future generations.
 
 
+## Usage
+
+These dot files can be used to greatly enhance your terminal experience.
+
+Features include:
+
+- Enhanced prompt with plenty of details
+- Support for git information in your prompt
+- Colored output by default with various terminal commands
+- Fully configured vim with common plugins
+
+
 ## Installation
 
 The included `install` script is a bash script that will install the files.  Simply execute it with `./install`.
