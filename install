@@ -1,4 +1,38 @@
 #!/bin/bash
 
-# Dot Files Installer
+# Get script info
+if [ $(uname) = "Darwin" ]
+then
+    SELF="$(cd $(dirname $0) && pwd -P)/$(basename $0)"
+else
+    SELF=$(readlink -f $0)
+fi
+SELF_PATH=$(dirname "$SELF")
+SELF_NAME=$(basename "$SELF")
+
+# Create dependent directories
+mkdir -p "$HOME/.vim/undo" &> /dev/null
+
+# Check for src folder
+if [ -d "src/" ]
+then
+
+    # Copy all dot files to user home
+    cp -R "src/" "$HOME" &> /dev/null
+
+    # Set permissions on .ssh to 600 for "strict" ssh settings
+    chmod -R 0600 "$HOME/.ssh" &> /dev/null
+
+    # Copy to /etc/skel if able & made same chmod on .ssh
+    if [ -d "/etc/skel" ]
+    then
+        cp -R "src/" "etc/skel" &> /dev/null
+        chmod -R 0600 "/etc/skel/.ssh" &> /dev/null
+    fi
+
+else
+
+    # Check for wget or curl to download all files
+
+fi
 
