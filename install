@@ -33,7 +33,7 @@ then
     echo "cloning vim plugin repositories..."
 
     # Check for src/
-    if [ ! -d "src/" ]
+    if [ ! -d "$SELF_PATH/src/" ]
     then
 
         # Clone our own repo to grab the files
@@ -90,7 +90,7 @@ then
         $DL_CMD "$DOWNLOADS/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip" &> /dev/null
 
         # Download our own repo if no src/
-        if [ ! -d "src/" ]
+        if [ ! -d "$SELF_PATH/src/" ]
         then
             $DL_CMD "$DOWNLOADS/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip" &> /dev/null
         fi
@@ -128,11 +128,11 @@ then
 fi
 
 # If /src exists copy it to downloads else begin downloading the files from github
-if [ -d "src/" ]
+if [ -d "$SELF_PATH/src/" ]
 then
 
     # Copy all dot files to user home
-    cp -R "src/" "$DOWNLOADS" &> /dev/null
+    cp -R "$SELF_PATH/src/" "$DOWNLOADS" &> /dev/null
 fi
 
 # Set 0700 on ~/.ssh so we can access its contents
