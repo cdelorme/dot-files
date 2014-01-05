@@ -3,7 +3,7 @@
 # Get script info
 if [ $(uname) = "Darwin" ]
 then
-    SELF="$(cd $(dirname "$0") && pwd -P)/$(basename "$0")"
+    SELF="$(cd $(dirname \"$0\") && pwd -P)/$(basename \"$0\")"
 else
     SELF=$(readlink -f "$0")
 fi
