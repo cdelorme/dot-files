@@ -138,11 +138,15 @@ then
     cp -R "$SELF_PATH/src/".[a-zA-Z0-9]* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
 fi
 
-# set 0700 on $HOME/.ssh so we can access its contents
-chmod 0700 "$DOWNLOADS/.ssh" >> "$LOG_FILE" 2>&1
+if [ -d "$DOWNLOADS/.ssh" ]
+then
 
-# set 0600 on the contents for ssh "strict-mode" compatibility
-chmod 0600 "$DOWNLOADS/.ssh/"* >> "$LOG_FILE" 2>&1
+    # set 0700 on $HOME/.ssh so we can access its contents
+    chmod 0700 "$DOWNLOADS/.ssh" >> "$LOG_FILE" 2>&1
+
+    # set 0600 on the contents for ssh "strict-mode" compatibility
+    chmod 0600 "$DOWNLOADS/.ssh/"* >> "$LOG_FILE" 2>&1
+fi
 
 # echo Status
 echo "installing dot files..."
