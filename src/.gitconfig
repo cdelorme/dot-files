@@ -14,5 +14,3 @@
     pp = !git pull && git push
 [push]
     default = matching
-[remote "origin"]
-    push = HEAD
