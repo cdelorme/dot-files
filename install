@@ -135,6 +135,12 @@ then
     fi
 fi
 
+# manually download git-completion
+if [ -n "$DL_CMD" ]
+then
+    $DL_CMD "$DOWNLOADS/.git-completion" "https://raw2.github.com/git/git/master/contrib/completion/git-completion.bash"
+fi
+
 # if /src exists copy it to downloads else begin downloading the files from github
 if [ -d "$SELF_PATH/src/" ]
 then
