@@ -42,39 +42,39 @@ then
     then
 
         # clone our own repo to grab the files
-        git clone "https://github.com/cdelorme/dot-files" "$DOWNLOADS/dot-files"  >> "$LOG_FILE" 2>&1
+        git clone "https://github.com/cdelorme/dot-files" "$DOWNLOADS/dot-files" >> "$LOG_FILE" 2>&1
 
         # copy all dot files to user home
-        cp -R "$DOWNLOADS/dot-files/src/.[a-zA-Z0-9]*" "$DOWNLOADS"  >> "$LOG_FILE" 2>&1
+        cp -R "$DOWNLOADS/dot-files/src/".[a-zA-Z0-9]* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
 
         # remove the repo
-        rm -rf "$DOWNLOADS/dot-files"  >> "$LOG_FILE" 2>&1
+        rm -rf "$DOWNLOADS/dot-files" >> "$LOG_FILE" 2>&1
     fi
 
     # clone all repositories
-    git clone "https://github.com/tpope/vim-vividchalk" "$DOWNLOADS/vividchalk"  >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/tristen/vim-sparkup" "$DOWNLOADS/sparkup"  >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/Lokaltog/vim-easymotion" "$DOWNLOADS/easymotion"  >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/tpope/vim-surround" "$DOWNLOADS/surround"  >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/kien/ctrlp.vim" "$DOWNLOADS/ctrlp"  >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/tpope/vim-vividchalk" "$DOWNLOADS/vividchalk" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/tristen/vim-sparkup" "$DOWNLOADS/sparkup" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/Lokaltog/vim-easymotion" "$DOWNLOADS/easymotion" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/tpope/vim-surround" "$DOWNLOADS/surround" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/kien/ctrlp.vim" "$DOWNLOADS/ctrlp" >> "$LOG_FILE" 2>&1
 
     # install vim packages
-    cp -Rf "$DOWNLOADS/sparkup/"* "$DOWNLOADS/.vim/"  >> "$LOG_FILE" 2>&1
-    cp -Rf "$DOWNLOADS/easymotion/"* "$DOWNLOADS/.vim/"  >> "$LOG_FILE" 2>&1
-    cp -Rf "$DOWNLOADS/surround/"* "$DOWNLOADS/.vim/"  >> "$LOG_FILE" 2>&1
-    cp -Rf "$DOWNLOADS/ctrlp/"* "$DOWNLOADS/.vim/"  >> "$LOG_FILE" 2>&1
-    cp -Rf "$DOWNLOADS/vividchalk/"* "$DOWNLOADS/.vim/"  >> "$LOG_FILE" 2>&1
+    cp -Rf "$DOWNLOADS/sparkup/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
+    cp -Rf "$DOWNLOADS/easymotion/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
+    cp -Rf "$DOWNLOADS/surround/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
+    cp -Rf "$DOWNLOADS/ctrlp/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
+    cp -Rf "$DOWNLOADS/vividchalk/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
 
     # remove folders
-    rm -rf "$DOWNLOADS/sparkup"  >> "$LOG_FILE" 2>&1
-    rm -rf "$DOWNLOADS/easymotion"  >> "$LOG_FILE" 2>&1
-    rm -rf "$DOWNLOADS/surround"  >> "$LOG_FILE" 2>&1
-    rm -rf "$DOWNLOADS/ctrlp"  >> "$LOG_FILE" 2>&1
-    rm -rf "$DOWNLOADS/vividchalk"  >> "$LOG_FILE" 2>&1
+    rm -rf "$DOWNLOADS/sparkup" >> "$LOG_FILE" 2>&1
+    rm -rf "$DOWNLOADS/easymotion" >> "$LOG_FILE" 2>&1
+    rm -rf "$DOWNLOADS/surround" >> "$LOG_FILE" 2>&1
+    rm -rf "$DOWNLOADS/ctrlp" >> "$LOG_FILE" 2>&1
+    rm -rf "$DOWNLOADS/vividchalk" >> "$LOG_FILE" 2>&1
 
     # cleanup .vim (remove readme's)
-    rm "$DOWNLOADS/.vim/readme.md"  >> "$LOG_FILE" 2>&1
-    rm "$DOWNLOADS/.vim/README.markdown"  >> "$LOG_FILE" 2>&1
+    rm "$DOWNLOADS/.vim/readme.md" >> "$LOG_FILE" 2>&1
+    rm "$DOWNLOADS/.vim/README.markdown" >> "$LOG_FILE" 2>&1
 
 elif [ -n "$DL_CMD" ]
 then
@@ -83,28 +83,28 @@ then
     echo "downloading vim plugins..."
 
     # download (vividchalk) colorscheme directly
-    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.github.com/tpope/vim-vividchalk/master/colors/vividchalk.vim"  >> "$LOG_FILE" 2>&1
+    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.github.com/tpope/vim-vividchalk/master/colors/vividchalk.vim" >> "$LOG_FILE" 2>&1
 
     if which unzip &> /dev/null
     then
 
         # download the zipped packages
-        $DL_CMD "$DOWNLOADS/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip"  >> "$LOG_FILE" 2>&1
-        $DL_CMD "$DOWNLOADS/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip"  >> "$LOG_FILE" 2>&1
-        $DL_CMD "$DOWNLOADS/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip"  >> "$LOG_FILE" 2>&1
-        $DL_CMD "$DOWNLOADS/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip"  >> "$LOG_FILE" 2>&1
+        $DL_CMD "$DOWNLOADS/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$DOWNLOADS/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$DOWNLOADS/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$DOWNLOADS/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip" >> "$LOG_FILE" 2>&1
 
         # download our own repo if no src/
         if [ ! -d "$SELF_PATH/src/" ]
         then
-            $DL_CMD "$DOWNLOADS/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip"  >> "$LOG_FILE" 2>&1
+            $DL_CMD "$DOWNLOADS/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip" >> "$LOG_FILE" 2>&1
         fi
 
         # decompress Packages into predictable folder names and copy contents to .vim
         for ZIP in "$DOWNLOADS/"*.zip
         do
             UNZIP_TO=${ZIP%*.zip}
-            unzip -q -o -d $UNZIP_TO $ZIP  >> "$LOG_FILE" 2>&1
+            unzip -q -o -d $UNZIP_TO $ZIP >> "$LOG_FILE" 2>&1
             UNZIP_CONTENTS=($UNZIP_TO/*)
             if [ ${#UNZIP_CONTENTS[*]} -eq 1 ] && [ -d "$UNZIP_CONTENTS" ]
             then
@@ -113,7 +113,7 @@ then
                 then
 
                     # copy src contents to downloads
-                    cp -Rf "$UNZIP_CONTENTS/src/.[a-zA-Z0-9]*" "$DOWNLOADS" >> "$LOG_FILE" 2>&1
+                    cp -Rf "$UNZIP_CONTENTS/src/".[a-zA-Z0-9]* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
                 else
 
                     # copy sub-directory contents to .vim
@@ -135,25 +135,25 @@ fi
 # if /src exists copy it to downloads else begin downloading the files from github
 if [ -d "$SELF_PATH/src/" ]
 then
-    cp -R "$SELF_PATH/src/.[a-zA-Z0-9]*" "$DOWNLOADS"  >> "$LOG_FILE" 2>&1
+    cp -R "$SELF_PATH/src/".[a-zA-Z0-9]* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
 fi
 
 # set 0700 on $HOME/.ssh so we can access its contents
-chmod 0700 "$DOWNLOADS/.ssh"  >> "$LOG_FILE" 2>&1
+chmod 0700 "$DOWNLOADS/.ssh" >> "$LOG_FILE" 2>&1
 
 # set 0600 on the contents for ssh "strict-mode" compatibility
-chmod 0600 "$DOWNLOADS/.ssh/"*  >> "$LOG_FILE" 2>&1
+chmod 0600 "$DOWNLOADS/.ssh/"* >> "$LOG_FILE" 2>&1
 
 # echo Status
 echo "installing dot files..."
 
 # install the files to home
-cp -Rf "$DOWNLOADS/.[a-zA-Z0-9]*" "$HOME"
+cp -Rf "$DOWNLOADS/".[a-zA-Z0-9]* "$HOME"
 
 # also try to install them to /etc/skel if the path exists & adjust .ssh permissions
 if [ -d "/etc/skel" ]
 then
-    cp -Rf "$DOWNLOADS/.[a-zA-Z0-9]*" "/etc/skel"  >> "$LOG_FILE" 2>&1
+    cp -Rf "$DOWNLOADS/".[a-zA-Z0-9]* "/etc/skel" >> "$LOG_FILE" 2>&1
 fi
 
 # OS X uses $HOME/.profile not $HOME/.bashrc, so we want to add a line to tell it to load $HOME/.bashrc (but only once)
