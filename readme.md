@@ -47,6 +47,8 @@ Any downloaded files will be placed next to the script in `downloads/`.  Simply 
 
 You may consider [remapping capslock](http://c2.com/cgi/wiki?RemapCapsLock), since nobody really uses that key anymore.
 
+OS X has used "Darwin" as their [uname response](http://en.wikipedia.org/wiki/Uname) for many years now, so it is reliable.
+
 
 ## Planned Features
 
