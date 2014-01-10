@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# define log file
-LOG_FILE=$(readlink -f $0).log
-# another example for testing:
-# LOG_FILE="/dev/stdout"
-
 # get script info
 if [ $(uname) = "Darwin" ]
 then
-    SELF="$(cd $(dirname \"$0\") && pwd -P)/$(basename \"$0\")"
+    SELF=$(cd $(dirname "$0") && pwd -P)/$(basename "$0")
 else
     SELF=$(readlink -f "$0")
 fi
 SELF_PATH=$(dirname "$SELF")
+
+# define log file
+LOG_FILE="${SELF}.log"
+# another example for testing:
+# LOG_FILE="/dev/stdout"
 
 # define downloads path
 DOWNLOADS="$SELF_PATH/downloads"
