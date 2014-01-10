@@ -24,6 +24,7 @@ then
 elif which wget &> /dev/null
 then
     DL_CMD="wget -O"
+    echo "curl package recommended..." >> "$LOG_FILE" 2>&1
 fi
 
 # create dependent folders
@@ -129,6 +130,8 @@ then
             rm -rf $ZIP >> "$LOG_FILE" 2>&1
             rm -rf $UNZIP_TO >> "$LOG_FILE" 2>&1
         done
+    else
+        echo "unzip required to install compressed contents..." >> "$LOG_FILE" 2>&1
     fi
 fi
 
