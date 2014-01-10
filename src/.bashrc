@@ -6,7 +6,7 @@
 # Set our editor
 export EDITOR=vim
 
-# Create a ~/bin directory if not exists & add to path (to front)
+# Create a $HOME/bin directory if not exists & add to path (to front)
 if [ -d "$HOME/bin" ]
 then
     mkdir -p "$HOME/bin" &> /dev/null
@@ -48,8 +48,8 @@ then
 fi
 
 # If no autostart dir exists create it
-if [ $(uname) != "Darwin" ] && [ ! -d "~/.config/autostart" ];then
-    mkdir -p "~/.config/autostart"
+if [ $(uname) != "Darwin" ] && [ ! -d "$HOME/.config/autostart" ];then
+    mkdir -p "$HOME/.config/autostart"
 fi
 
 # If guake exists add it to startup items
