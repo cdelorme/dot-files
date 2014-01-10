@@ -2,6 +2,8 @@
 
 # define log file
 LOG_FILE=$(readlink -f $0).log
+# another example for testing:
+# LOG_FILE="/dev/stdout"
 
 # get script info
 if [ $(uname) = "Darwin" ]
@@ -43,7 +45,7 @@ then
         git clone "https://github.com/cdelorme/dot-files" "$DOWNLOADS/dot-files"  >> "$LOG_FILE" 2>&1
 
         # copy all dot files to user home
-        cp -R "$DOWNLOADS/dot-files/src/" "$DOWNLOADS"  >> "$LOG_FILE" 2>&1
+        cp -R "$DOWNLOADS/dot-files/src/.[a-zA-Z0-9]*" "$DOWNLOADS"  >> "$LOG_FILE" 2>&1
 
         # remove the repo
         rm -rf "$DOWNLOADS/dot-files"  >> "$LOG_FILE" 2>&1
@@ -111,7 +113,7 @@ then
                 then
 
                     # copy src contents to downloads
-                    cp -Rf "$UNZIP_CONTENTS/src/" "$DOWNLOADS" >> "$LOG_FILE" 2>&1
+                    cp -Rf "$UNZIP_CONTENTS/src/.[a-zA-Z0-9]*" "$DOWNLOADS" >> "$LOG_FILE" 2>&1
                 else
 
                     # copy sub-directory contents to .vim
@@ -133,9 +135,7 @@ fi
 # if /src exists copy it to downloads else begin downloading the files from github
 if [ -d "$SELF_PATH/src/" ]
 then
-
-    # copy all dot files to user home
-    cp -R "$SELF_PATH/src/" "$DOWNLOADS"  >> "$LOG_FILE" 2>&1
+    cp -R "$SELF_PATH/src/.[a-zA-Z0-9]*" "$DOWNLOADS"  >> "$LOG_FILE" 2>&1
 fi
 
 # set 0700 on $HOME/.ssh so we can access its contents
@@ -148,12 +148,12 @@ chmod 0600 "$DOWNLOADS/.ssh/"*  >> "$LOG_FILE" 2>&1
 echo "installing dot files..."
 
 # install the files to home
-cp -Rf "$DOWNLOADS/" "$HOME"
+cp -Rf "$DOWNLOADS/.[a-zA-Z0-9]*" "$HOME"
 
 # also try to install them to /etc/skel if the path exists & adjust .ssh permissions
 if [ -d "/etc/skel" ]
 then
-    cp -Rf "$DOWNLOADS/" "/etc/skel"  >> "$LOG_FILE" 2>&1
+    cp -Rf "$DOWNLOADS/.[a-zA-Z0-9]*" "/etc/skel"  >> "$LOG_FILE" 2>&1
 fi
 
 # OS X uses $HOME/.profile not $HOME/.bashrc, so we want to add a line to tell it to load $HOME/.bashrc (but only once)
