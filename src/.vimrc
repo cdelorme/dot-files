@@ -28,7 +28,8 @@ set nobackup noswapfile
 
 " select color scheme
 set background=dark
-:silent! colorscheme vividchalk
+":silent! colorscheme vividchalk
+:silent! colorscheme sunburst
 
 " set leader-key to comma
 let mapleader=","
