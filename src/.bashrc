@@ -13,10 +13,15 @@ then
 fi
 PATH="$HOME/bin:$PATH"
 
-# if OS X add brew path in front
+# Check for OS X
 if [ $(uname) = "Darwin" ]
 then
+
+    # Append brew path first
     PATH="/usr/local/bin:$PATH"
+
+    # Set library visibility
+    chflags nohidden "$HOME/Library"
 fi
 
 # shortened time format output
@@ -35,10 +40,15 @@ export HISTCONTROL=ignoreboth
 shopt -s checkwinsize
 
 # enable bash-completion if it exists
-if [ -f /etc/bash_completion ]; then
-. /etc/bash_completion
-elif [ -f /usr/share/bash-completion/bash_completion ]; then
-. /usr/share/bash-completion/bash_completion
+if [ -f /etc/bash_completion ]
+then
+    . /etc/bash_completion
+elif [ -f /usr/share/bash-completion/bash_completion ]
+then
+    . /usr/share/bash-completion/bash_completion
+elif which brew &> /dev/null && [ -f $(brew --prefix)/etc/bash_completion ]
+then
+    . $(brew --prefix)/etc/bash_completion
 fi
 
 # enable command-not-found bash script (list the packages that have the command)
