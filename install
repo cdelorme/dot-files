@@ -14,8 +14,9 @@ LOG_FILE="${SELF}.log"
 # another example for testing:
 # LOG_FILE="/dev/stdout"
 
-# define downloads path
+# define downloads & tmp file paths
 DOWNLOADS="$SELF_PATH/downloads"
+TMP_FILES="$DOWNLOADS/tmp"
 
 # check for wget or curl to download all files
 if which curl &> /dev/null
@@ -30,6 +31,7 @@ fi
 # create dependent folders
 mkdir -p "$DOWNLOADS/.vim/undo" >> "$LOG_FILE" 2>&1
 mkdir -p "$DOWNLOADS/.vim/colors" >> "$LOG_FILE" 2>&1
+mkdir -p "$TMP_FILES" >> "$LOG_FILE" 2>&1
 
 # check for git
 if which git &> /dev/null
@@ -43,40 +45,17 @@ then
     then
 
         # clone our own repo to grab the files
-        git clone "https://github.com/cdelorme/dot-files" "$DOWNLOADS/dot-files" >> "$LOG_FILE" 2>&1
-
-        # copy all dot files to user home
-        cp -R "$DOWNLOADS/dot-files/src/".[a-zA-Z0-9]* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
-
-        # remove the repo
-        rm -rf "$DOWNLOADS/dot-files" >> "$LOG_FILE" 2>&1
+        git clone "https://github.com/cdelorme/dot-files" "$TMP_FILES/dot-files" >> "$LOG_FILE" 2>&1
     fi
 
     # clone all repositories
-    git clone "https://github.com/tpope/vim-vividchalk" "$DOWNLOADS/vividchalk" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/tristen/vim-sparkup" "$DOWNLOADS/sparkup" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/Lokaltog/vim-easymotion" "$DOWNLOADS/easymotion" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/tpope/vim-surround" "$DOWNLOADS/surround" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/kien/ctrlp.vim" "$DOWNLOADS/ctrlp" >> "$LOG_FILE" 2>&1
-
-    # install vim packages
-    cp -Rf "$DOWNLOADS/sparkup/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
-    cp -Rf "$DOWNLOADS/easymotion/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
-    cp -Rf "$DOWNLOADS/surround/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
-    cp -Rf "$DOWNLOADS/ctrlp/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
-    cp -Rf "$DOWNLOADS/vividchalk/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
-
-    # remove folders
-    rm -rf "$DOWNLOADS/sparkup" >> "$LOG_FILE" 2>&1
-    rm -rf "$DOWNLOADS/easymotion" >> "$LOG_FILE" 2>&1
-    rm -rf "$DOWNLOADS/surround" >> "$LOG_FILE" 2>&1
-    rm -rf "$DOWNLOADS/ctrlp" >> "$LOG_FILE" 2>&1
-    rm -rf "$DOWNLOADS/vividchalk" >> "$LOG_FILE" 2>&1
-
-    # cleanup .vim (remove readme's)
-    rm "$DOWNLOADS/.vim/readme.md" >> "$LOG_FILE" 2>&1
-    rm "$DOWNLOADS/.vim/README.markdown" >> "$LOG_FILE" 2>&1
-
+    git clone "https://github.com/tpope/vim-vividchalk" "$TMP_FILES/vividchalk" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/tangphillip/SunburstVIM.git" "$TMP_FILES/sunburst" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/tristen/vim-sparkup" "$TMP_FILES/sparkup" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/Lokaltog/vim-easymotion" "$TMP_FILES/easymotion" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/tpope/vim-surround" "$TMP_FILES/surround" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/kien/ctrlp.vim" "$TMP_FILES/ctrlp" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/mattn/emmet-vim.git" "$TMP_FILES/emmet" >> "$LOG_FILE" 2>&1
 elif [ -n "$DL_CMD" ]
 then
 
@@ -91,52 +70,70 @@ then
     then
 
         # download the zipped packages
-        $DL_CMD "$DOWNLOADS/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip" >> "$LOG_FILE" 2>&1
-        $DL_CMD "$DOWNLOADS/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip" >> "$LOG_FILE" 2>&1
-        $DL_CMD "$DOWNLOADS/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip" >> "$LOG_FILE" 2>&1
-        $DL_CMD "$DOWNLOADS/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$TMP_FILES/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$TMP_FILES/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$TMP_FILES/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$TMP_FILES/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$TMP_FILES/emmet.zip" "https://github.com/tangphillip/SunburstVIM/archive/master.zip" >> "$LOG_FILE" 2>&1
 
         # download our own repo if no src/
         if [ ! -d "$SELF_PATH/src/" ]
         then
-            $DL_CMD "$DOWNLOADS/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip" >> "$LOG_FILE" 2>&1
+            $DL_CMD "$TMP_FILES/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip" >> "$LOG_FILE" 2>&1
         fi
 
-        # decompress Packages into predictable folder names and copy contents to .vim
-        for ZIP in "$DOWNLOADS/"*.zip
+        # decompress packages and delete the zips
+        for ZIP in "$TMP_FILES/"*.zip
         do
-            UNZIP_TO=${ZIP%*.zip}
-            unzip -q -o -d $UNZIP_TO $ZIP >> "$LOG_FILE" 2>&1
-            UNZIP_CONTENTS=($UNZIP_TO/*)
-            if [ ${#UNZIP_CONTENTS[*]} -eq 1 ] && [ -d "$UNZIP_CONTENTS" ]
-            then
-
-                if [ -d "$UNZIP_CONTENTS/src" ]
-                then
-
-                    # copy src contents to downloads
-                    cp -Rf "$UNZIP_CONTENTS/src/".[a-zA-Z0-9]* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
-                else
-
-                    # copy sub-directory contents to .vim
-                    cp -Rf "$UNZIP_CONTENTS/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
-                fi
-            else
-
-                # copy contents to .vim
-                cp -Rf "$UNZIP_TO/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
-            fi
-
-            # delete the ZIP file and folder we extracted it to
+            unzip -q -o $ZIP >> "$LOG_FILE" 2>&1
             rm -rf $ZIP >> "$LOG_FILE" 2>&1
-            rm -rf $UNZIP_TO >> "$LOG_FILE" 2>&1
         done
     else
         echo "unzip required to install compressed contents..." >> "$LOG_FILE" 2>&1
     fi
 fi
 
-# Check for manual downloads (easier this way)
+# iterate all files in $TMP_FILES
+for TMP_PATH in $TMP_FILES/*
+do
+
+    # Get a count of items
+    CONTENTS=($TMP_PATH/*)
+
+    # if only one item append to TMP_PATH to dig deeper
+    if [ ${#CONTENTS[*]} -eq 1 ] && [ -d "$CONTENTS" ]
+    then
+        TMP_PATH="$TMP_PATH/$CONTENTS"
+    fi
+
+    # look for src directory
+    if [ -d "$TMP_PATH/src" ]
+    then
+
+        # copy contents to downloads
+        cp -R "$TMP_PATH/src/".[a-zA-Z0-9]* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
+    else
+
+        # iterate the contents
+        for TMP_DIR in "$TMP_PATH/"*
+        do
+
+            # delete anything that is not a directory (readmes etc)
+            if [ ! -d "$TMP_DIR" ]
+            then
+                rm -rf "$TMP_DIR"
+            fi
+        done
+
+        # merge directories recursively with $DOWNLOADS/.vim/
+        cp -Rf "$TMP_PATH/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
+    fi
+done
+
+# remove TMP_FILES path
+rm -rf $TMP_FILES >> "$LOG_FILE" 2>&1
+
+# check for manual downloads (easier this way)
 if [ -n "$DL_CMD" ]
 then
     $DL_CMD "$DOWNLOADS/.git-completion" "https://raw2.github.com/git/git/master/contrib/completion/git-completion.bash"
