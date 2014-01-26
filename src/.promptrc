@@ -32,6 +32,12 @@ c_sgr0=`tput sgr0`
 # Define enhancers for easy future-external customization
 export ENHANCERS=('gitify')
 
+# Set Defaults to unset properties
+[[ -z "ENHANCED_PROMPT" ]] && ENHANCED_PROMPT=false
+[[ -z "GIT_PROMPT_ON" ]] && GIT_PROMPT_BRANCH_ONLY=true
+[[ -z "GIT_PROMPT_BRANCH_ONLY" ]] && GIT_PROMPT_BRANCH_ONLY=false
+[[ -z "GIT_PROMPT_DETAILED" ]] && GIT_PROMPT_DETAILED=true
+
 # Add git information if applicable
 gitify ()
 {
