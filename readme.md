@@ -6,13 +6,14 @@ These are my dot files.  There are many like them, but these are mine.
 My install script and related are licensed under GPLv3, they will forever remain free to edit and modify provided you grant the same courtesy to future generations.
 
 
-## Usage
+## Features
 
 These dot files can be used to greatly enhance your terminal experience.
 
 Features include:
 
 - Enhanced prompt with plenty of details
+- Detailed git output, giving you an instant summary of your working branch
 - Support for git information in your prompt
 - Colored output by default with various terminal commands
 - Fully configured vim with common plugins
@@ -25,6 +26,7 @@ The included `install` script is a bash script that will install the files.  Sim
 Executing as root or with sudo privileges will also throw a copy into `/etc/skel` if your system uses that directory, allowing all new users to take advantage of the same configuration.
 
 **The install script will overwrite any files with conflicting names.**
+
 
 #### Installer Requirements
 
@@ -49,9 +51,10 @@ You may consider [remapping capslock](http://c2.com/cgi/wiki?RemapCapsLock), sin
 
 OS X has used "Darwin" as their [uname response](http://en.wikipedia.org/wiki/Uname) for many years now, so it is reliable.
 
+If you are using OSX and the hostname is really like (eg. `Firstname Lastname's Macbook.local`) you can fix that easily with `sudo scutil --set HostName newname.local`.
+
 
 ## Planned Features
 
-- Git Prompt deatiled output is a work-in-progress and is missing support for some statuses
-- It should be possible to map ctrl/cmd+v to auto-trigger `:set paste` and `:set nopaste` from insert mode
-- Support for a shared clipboard with vim would also be nice
+- Mapping control/command + v hotkey to auto-trigger `:set paste` and then `:set nopaste`
+- Shared clipboard support with vim

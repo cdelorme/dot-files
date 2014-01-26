@@ -100,8 +100,8 @@ do
     # Get a count of items
     CONTENTS=($TMP_PATH/*)
 
-    # if only one item append to TMP_PATH to dig deeper
-    if [ ${#CONTENTS[*]} -eq 1 ] && [ -d "$CONTENTS" ]
+    # if not git, and only one item append to TMP_PATH to dig deeper
+    if [ ! -d $TMP_PATH/.git ] && [ ${#CONTENTS[*]} -eq 1 ] && [ -d "$CONTENTS" ]
     then
         TMP_PATH="$TMP_PATH/$CONTENTS"
     fi
@@ -136,8 +136,8 @@ rm -rf $TMP_FILES >> "$LOG_FILE" 2>&1
 # check for manual downloads (easier this way)
 if [ -n "$DL_CMD" ]
 then
-    $DL_CMD "$DOWNLOADS/.git-completion" "https://raw2.github.com/git/git/master/contrib/completion/git-completion.bash"
-    $DL_CMD "$DOWNLOADS/.githelpers" "https://raw2.github.com/garybernhardt/dotfiles/master/.githelpers"
+    $DL_CMD "$DOWNLOADS/.git-completion" "https://raw2.github.com/git/git/master/contrib/completion/git-completion.bash" >> "$LOG_FILE" 2>&1
+    $DL_CMD "$DOWNLOADS/.githelpers" "https://raw2.github.com/garybernhardt/dotfiles/master/.githelpers" >> "$LOG_FILE" 2>&1
 fi
 
 # if /src exists copy it to downloads else begin downloading the files from github
