@@ -19,6 +19,13 @@ Features include:
 - Fully configured vim with common plugins
 
 
+## Dependencies
+
+This script will attempt to use `curl` and fallback on `wget` to download individual files.  For plugins or entire missing packages it will attempt to use `git`, otherwise it will use the previously selected download command and require `unzip` to decompress the packages.
+
+So, either have `curl` __or__ `wget` installed, **and** either `git` __or__ `unzip` installed.
+
+
 ## Installation
 
 The included `install` script is a bash script that will install the files.  Simply execute it with `./install`.
@@ -33,7 +40,7 @@ Executing as root or with sudo privileges will also throw a copy into `/etc/skel
 - must be executed from a directory you have write permissions on
 - remote install, vim plugins, and colorscheme require either git, or unzip and curl or wget
 
-_The script will fail silently, skipping any tasks it cannot perform._
+_The script will fail silently, skipping any tasks it cannot perform.  You can check for failed actions in the log file it generates._
 
 
 ### Automatic Downloads
