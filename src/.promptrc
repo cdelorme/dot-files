@@ -46,89 +46,101 @@ gitify ()
     if $GIT_PROMPT_ON
     then
 
-        # Grab the branch
-        git_branch=$(git branch | grep -e "^\*\s" | tr -d '* ')
+        # Verify we are in a git repo
+        git_works=$(git branch 2>&1)
 
         # If no error occurred assume we are inside a repo
         if [ $? -eq 0 ]
         then
+
+            # Acquire the branch name
+            git_branch=$(echo "${git_works}" | sed -n 's/^\*[ ]*//p')
 
             if $GIT_PROMPT_BRANCH_ONLY
             then
 
                 # Append branch only
                 prompt_string="${prompt_string} [${git_branch}]"
-
             else
 
                 # Acquire git status
                 git_stats=$(git status --porcelain --untracked-files=all)
 
                 # Get count of changes from git_stats
-                git_changes=$(echo "${git_stats}" | wc -l | tr -d ' ')
+                git_changes=$(echo "${git_stats}" | sed '/^\s*$/d' | wc -l)
 
                 # If no changes print branch only
                 if [ $git_changes -gt 0 ]
                 then
 
                     # Append branch with red color to prompt string
-                    prompt_string="${prompt_string} [${c_red}${git_branch}${c_sgr0}: "
+                    prompt_string="${prompt_string} [${c_red}${git_branch}${c_sgr0}"
 
-                    # Do we need detailed output?
+                    # Do we want to print detailed?
                     if $GIT_PROMPT_DETAILED
                     then
 
                         # Currently this script only attends to:
+                        #   untracked files
                         #   new files
+                        #   renamed files
                         #   modified files
                         #   deleted filesd
-                        #   untracked files
                         # it will not count anything it cannot identify
                         # it will not show branch conflicts (eg both*)
                         # it **will** show unstaged and staged independently (if both exist)
-                        #  Format: u#,m#/#,d#/#
-
-                        # Set a default of 0 for expected items
-                        modified_unstaged_count=0
-                        deleted_unstaged_count=0
-                        modified_staged_count=0
-                        deleted_staged_count=0
-                        untracked_count=0
+                        #  Format: u# a# r# m#/# d#/#
 
                         # Parse known types for detailed output
-                        untracked_count=$(echo "${git_stats}" | grep -c "??")
-                        modified_staged_count=$(echo "${git_stats}" | grep -c "")
-                        modified_unstaged_count=$(echo "${git_stats}" | grep -c "")
-                        deleted_staged_count=$(echo "${git_stats}" | grep -c "")
-                        deleted_unstaged_count=$(echo "${git_stats}" | grep -c "")
+                        untracked_count=$(echo "${git_stats}" | grep -ce "^??")
+                        new_file_count=$(echo "${git_stats}" | grep -ce "^A ")
+                        renamed_count=$(echo "${git_stats}" | grep -ce "^R ")
+                        modified_staged_count=$(echo "${git_stats}" | grep -ce "^M ")
+                        modified_unstaged_count=$(echo "${git_stats}" | grep -ce "^ M")
+                        deleted_staged_count=$(echo "${git_stats}" | grep -ce "^D ")
+                        deleted_unstaged_count=$(echo "${git_stats}" | grep -ce "^ D")
 
-                        # Append Detailed Output Logically
-                        # This is as clean as I could make this quickly
-                        # There may be a fancier way to approach printing
-                        # these values conditionally...
+                        # Appending the contents below
+                        # This process is exceedingly tedius
+                        # if a better approach is found it
+                        # should be implemented
+
+                        # If our total counts are gt 0, append colon prefix
+                        [[ $(expr $untracked_count + $new_file_count + $renamed_count + $modified_staged_count + $modified_unstaged_count + $deleted_staged_count + $deleted_unstaged_count) -gt 0 ]] && prompt_string="${prompt_string}:"
 
                         # If we have untracked items, append
-                        [[ $untracked_count -gt 0 ]] && prompt_string="${prompt_string}${c_red}u${untracked_count}${c_sgr0}"
+                        [[ $untracked_count -gt 0 ]] && prompt_string="${prompt_string} ${c_red}u${untracked_count}${c_sgr0}"
 
-                        # If we have unstaged modified append
-                        [[ $modified_unstaged_count -gt 0 ]] && prompt_string="${prompt_string}${c_red}m${modified_unstaged_count}${c_sgr0}" && [[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string}/"
+                        # If we have staged added files, append (unstaged == untracked)
+                        [[ $new_file_count -gt 0 ]] && prompt_string="${prompt_string} ${c_green}a${new_file_count}${c_sgr0}"
 
-                        # If we have staged modified append green
+                        # If we have staged renamed files, append (unstaged is a combination of untracked & deleted)
+                        [[ $renamed_count -gt 0 ]] && prompt_string="${prompt_string} ${c_green}r${renamed_count}${c_sgr0}"
+
+                        # If we have modifications, append header
+                        [[ $modified_unstaged_count -gt 0 ]] || [[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string} ${c_red}m${c_sgr0}"
+
+                        # If we have modified unstaged, append red count
+                        [[ $modified_unstaged_count -gt 0 ]] && prompt_string="${prompt_string}${c_red}${modified_unstaged_count}${c_sgr0}" && [[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string}/"
+
+                        # If we have modified staged, append green count
                         [[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string}${c_green}${modified_staged_count}${c_sgr0}"
 
-                        # If we have unstaged deleted append
-                        [[ $deleted_unstaged_count -gt 0 ]] && prompt_string="${prompt_string}${c_red}d${deleted_unstaged_count}${c_sgr0}" && [[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string}/"
+                        # If we have deletions, append header
+                        [[ $deleted_unstaged_count -gt 0 ]] || [[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string} ${c_red}d${c_sgr0}"
 
-                        # If we have staged deleted append green
+                        # If we have deleted unstaged, append red count
+                        [[ $deleted_unstaged_count -gt 0 ]] && prompt_string="${prompt_string}${c_red}${deleted_unstaged_count}${c_sgr0}" && [[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string}/"
+
+                        # If we have deleted staged, append green count
                         [[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string}${c_green}${deleted_staged_count}${c_sgr0}"
 
                         # Close prompt
                         prompt_string="${prompt_string}]"
-
                     else
 
                         # Append count & close branch
-                        prompt_string="${prompt_string}${c_red}${git_changes}${c_sgr0}]"
+                        prompt_string="${prompt_string}: ${c_red}${git_changes}${c_sgr0}]"
                     fi
                 else
                     prompt_string="${prompt_string} [${c_green}${git_branch}${c_sgr0}]"
