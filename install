@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# If clear exists, use it before we populate the screen with install messages
+if which clear &> /dev/null
+then
+    clear
+fi
+
 # get script info
 if [ $(uname) = "Darwin" ]
 then
@@ -82,10 +88,13 @@ then
             $DL_CMD "$TMP_FILES/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip" >> "$LOG_FILE" 2>&1
         fi
 
+        # user feedback
+        echo "decompressing packages..."
+
         # decompress packages and delete the zips
         for ZIP in "$TMP_FILES/"*.zip
         do
-            unzip -q -o $ZIP >> "$LOG_FILE" 2>&1
+            unzip -q -o -d "${TMP_FILES}" "${ZIP}" >> "$LOG_FILE" 2>&1
             rm -rf $ZIP >> "$LOG_FILE" 2>&1
         done
     else
