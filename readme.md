@@ -61,6 +61,16 @@ OS X has used "Darwin" as their [uname response](http://en.wikipedia.org/wiki/Un
 If you are using OSX and the hostname is really like (eg. `Firstname Lastname's Macbook.local`) you can fix that easily with `sudo scutil --set HostName newname.local`.
 
 
+## OS X
+
+The root user exists on osx, and its home dir is `/var/root`.  By default the root account on OSX uses the `/bin/sh` shell, to switch to bash you will first have to run:
+
+    sudo su
+    chsh -s /bin/bash root
+
+Then you should be able to install the dot-files as the root user with no other problems.
+
+
 ## Planned Features
 
 - Mapping control/command + v hotkey to auto-trigger `:set paste` and then `:set nopaste`
