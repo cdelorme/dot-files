@@ -180,7 +180,7 @@ fi
 # OS X uses $HOME/.profile not $HOME/.bashrc, so we want to add a line to tell it to load $HOME/.bashrc (but only once)
 if [ $(uname) = "Darwin" ] && ! grep ".bashrc" "$HOME/.profile" &> /dev/null
 then
-    echo '\n\nif [ -f "$HOME/.bashrc" ]\nthen\n\t. $HOME/.bashrc\nfi\n' >> "$HOME/.profile"
+    echo -ne '\n\nif [ -f "$HOME/.bashrc" ]\nthen\n\t. $HOME/.bashrc\nfi\n' >> "$HOME/.profile"
 fi
 
 # final status message
