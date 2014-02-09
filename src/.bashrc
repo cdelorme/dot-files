@@ -11,14 +11,14 @@ if [ -d "$HOME/bin" ]
 then
     mkdir -p "$HOME/bin" &> /dev/null
 fi
-PATH="$HOME/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
 
 # Check for OS X
 if [ $(uname) = "Darwin" ]
 then
 
     # Append brew path first
-    PATH="/usr/local/bin:$PATH"
+    export PATH="/usr/local/bin:$PATH"
 
     # Set library visibility
     chflags nohidden "$HOME/Library"
