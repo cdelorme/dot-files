@@ -169,7 +169,7 @@ then
     # Assume first argument was username and attempt to grab public keys from github account
     if [ -n "$DL_CMD" ] && [ -n "$1" ]
     then
-        $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${1}.keys"
+        $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${1}.keys" >> "$LOG_FILE" 2>&1
     fi
 
     # set 0700 on $HOME/.ssh so we can access its contents
