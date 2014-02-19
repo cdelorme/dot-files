@@ -158,6 +158,12 @@ fi
 if [ -d "$DOWNLOADS/.ssh" ]
 then
 
+    # Assume first argument was username and attempt to grab public keys from github account
+    if [ -n "$DL_CMD" ] && [ -n "$1" ]
+    then
+        $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${1}.keys"
+    fi
+
     # set 0700 on $HOME/.ssh so we can access its contents
     chmod 0700 "$DOWNLOADS/.ssh" >> "$LOG_FILE" 2>&1
 

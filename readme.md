@@ -29,7 +29,7 @@ So, either have `curl` __or__ `wget` installed, **and** either `git` __or__ `unz
 
 ## Installation
 
-The included `install` script is a bash script that will install the files.  Simply execute it with `./install`.
+The included `install` script is a bash script that will install the files.  Simply execute it with `./install`.  If you want the script to download your public keys from your github account simply run `./install username` where `username` is your github username.
 
 Executing as root or with sudo privileges will also throw a copy into `/etc/skel` if your system uses that directory, allowing all new users to take advantage of the same configuration.
 
@@ -75,6 +75,5 @@ Then you should be able to install the dot-files as the root user with no other 
 ## Planned Features
 
 - Use dot-glob flag to copy files instead of shell regex
-- If given github username download authorized keys
 - Mapping control/command + v hotkey to auto-trigger `:set paste` and then `:set nopaste`
 - Shared clipboard support with vim
