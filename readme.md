@@ -17,6 +17,7 @@ Features include:
 - Support for git information in your prompt
 - Colored output by default with various terminal commands
 - Fully configured vim with common plugins
+- If supplied a username will download your github public keys to ~/.ssh/authorized_keys
 
 
 ## Dependencies
@@ -73,6 +74,7 @@ Then you should be able to install the dot-files as the root user with no other 
 
 ## Planned Features
 
-- Automatically add authorized_keys using supplied github credentials
+- Use dot-glob flag to copy files instead of shell regex
+- If given github username download authorized keys
 - Mapping control/command + v hotkey to auto-trigger `:set paste` and then `:set nopaste`
 - Shared clipboard support with vim
