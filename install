@@ -120,7 +120,9 @@ do
     then
 
         # copy contents to downloads
-        cp -R "$TMP_PATH/src/".[a-zA-Z0-9]* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
+        shopt -s dotglob
+        cp -R "$TMP_PATH/src/"* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
+        shopt -u dotglob
     else
 
         # iterate the contents
@@ -152,7 +154,9 @@ fi
 # if /src exists copy it to downloads else begin downloading the files from github
 if [ -d "$SELF_PATH/src/" ]
 then
-    cp -R "$SELF_PATH/src/".[a-zA-Z0-9]* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
+    shopt -s dotglob
+    cp -R "$SELF_PATH/src/"* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
+    shopt -u dotglob
 fi
 
 if [ -d "$DOWNLOADS/.ssh" ]
@@ -175,12 +179,16 @@ fi
 echo "installing dot files..."
 
 # install the files to home
-cp -Rf "$DOWNLOADS/".[a-zA-Z0-9]* "$HOME"
+shopt -s dotglob
+cp -Rf "$DOWNLOADS/"* "$HOME"
+shopt -u dotglob
 
 # also try to install them to /etc/skel if the path exists & adjust .ssh permissions
 if [ -d "/etc/skel" ]
 then
-    cp -Rf "$DOWNLOADS/".[a-zA-Z0-9]* "/etc/skel" >> "$LOG_FILE" 2>&1
+    shopt -s dotglob
+    cp -Rf "$DOWNLOADS/"* "/etc/skel" >> "$LOG_FILE" 2>&1
+    shopt -u dotglob
 fi
 
 # OS X uses $HOME/.profile not $HOME/.bashrc, so we want to add a line to tell it to load $HOME/.bashrc (but only once)

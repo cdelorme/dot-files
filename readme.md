@@ -74,6 +74,5 @@ Then you should be able to install the dot-files as the root user with no other 
 
 ## Planned Features
 
-- Use dot-glob flag to copy files instead of shell regex
 - Mapping control/command + v hotkey to auto-trigger `:set paste` and then `:set nopaste`
 - Shared clipboard support with vim
