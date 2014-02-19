@@ -6,6 +6,10 @@ then
     clear
 fi
 
+# Give the user 5 seconds to cancel
+echo "Preparing to install, cancel within 5 seconds via ctrl+c, or wait until the script finishes."
+sleep 5
+
 # get script info
 if [ $(uname) = "Darwin" ]
 then
