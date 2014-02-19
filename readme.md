@@ -73,5 +73,6 @@ Then you should be able to install the dot-files as the root user with no other 
 
 ## Planned Features
 
+- Automatically add authorized_keys using supplied github credentials
 - Mapping control/command + v hotkey to auto-trigger `:set paste` and then `:set nopaste`
 - Shared clipboard support with vim
