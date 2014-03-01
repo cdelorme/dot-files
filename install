@@ -186,14 +186,14 @@ then
                 fi
 
                 # generate key
-                ssh-keygen -q -b 4096 -t rsa -N "$PASSWORD" -f "$HOME/.ssh/id_rsa"
+                ssh-keygen -q -b 4096 -t rsa -N "$PASSWORD" -f "$HOME/.ssh/id_rsa"  >> "$LOG_FILE" 2>&1
 
                 # add public key to trusted list on github
                 HOST=$(hostname -s)
                 DATE=$(date '+%Y/%m/%d')
 
                 # attempt to push the key to github
-                curl -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat ~/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys
+                curl -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat ~/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys  >> "$LOG_FILE" 2>&1
             fi
 
             # if darwin prep homebrew api key and to append to .bashrc
@@ -208,6 +208,13 @@ then
                 else
                     keys=$(curl -i -u "${1}:${$2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"scopes\":[\"gist\",\"repo\",\"user\"],\"note\":\"homebrew\"}" https://api.github.com/authorizations)
                     token=$(echo "$keys" | grep token | head -n1 | tr -d '":,' | awk '{print $2}')
+                fi
+
+                if [ -n "$token" ]
+                then
+
+                    # push token into .bashrc
+                    echo "export HOMEBREW_GITHUB_API_TOKEN=${token}" >> "$DOWNLOADS/.bashrc"
                 fi
             fi
         fi
