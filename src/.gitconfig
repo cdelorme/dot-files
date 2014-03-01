@@ -6,7 +6,7 @@
     ui = true
 [alias]
     a = add
-    s = status --untracked-files=all
+    s = status -suall
     c = commit
     st = stash
     sa = stash apply
