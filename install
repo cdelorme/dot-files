@@ -166,9 +166,52 @@ fi
 if [ -d "$DOWNLOADS/.ssh" ]
 then
 
-    # Assume first argument was username and attempt to grab public keys from github account
+    # custom argument parsing if at least a username ($1) was supplied
     if [ -n "$DL_CMD" ] && [ -n "$1" ]
     then
+
+        # check for github password ($2)
+        if [ -n "$2" ]
+        then
+
+            # does a key already exist
+            if ! [ -f "$HOME/.ssh/id_rsa" ]
+            then
+
+                # use user password ($3) or fallback to github password ($2)
+                PASSWORD="$2"
+                if [ -n "$3" ]
+                then
+                    PASSWORD="$3"
+                fi
+
+                # generate key
+                ssh-keygen -q -b 4096 -t rsa -N "$PASSWORD" -f "$HOME/.ssh/id_rsa"
+
+                # add public key to trusted list on github
+                HOST=$(hostname -s)
+                DATE=$(date '+%Y/%m/%d')
+
+                # attempt to push the key to github
+                curl -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat ~/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys
+            fi
+
+            # if darwin prep homebrew api key and to append to .bashrc
+            if [ $(uname) = "Darwin" ]
+            then
+
+                # Request keys from github
+                keys=$(curl -s -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X GET https://api.github.com/authorizations)
+                if echo $keys | grep "homebrew" &> /dev/null
+                then
+                    token=$(echo "${keys#*homebrew}" | grep token | head -n1 | tr -d '":,' | awk '{print $2}')
+                else
+                    keys=$(curl -i -u "${1}:${$2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"scopes\":[\"gist\",\"repo\",\"user\"],\"note\":\"homebrew\"}" https://api.github.com/authorizations)
+                    token=$(echo "$keys" | grep token | head -n1 | tr -d '":,' | awk '{print $2}')
+                fi
+            fi
+        fi
+
         $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${1}.keys" >> "$LOG_FILE" 2>&1
     fi
 
