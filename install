@@ -236,7 +236,7 @@ fi
 ##
 if [ $(uname) = "Darwin" ]
 then
-    echo -ne '\n\n# load $HOME\.bashrc\nif [ -f "$HOME/.bashrc" ]\nthen\n\t. $HOME/.bashrc\nfi\n' >> "$DOWNLOADS/.profile"
+    echo -ne '\n\n# load $HOME\.bashrc\nif [[ "$0" == *"bash" ]] && [ -f "$HOME/.bashrc" ]\nthen\n\t. $HOME/.bashrc\nfi\n' >> "$DOWNLOADS/.profile"
 fi
 
 # echo Status
