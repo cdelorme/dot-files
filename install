@@ -222,11 +222,21 @@ then
         $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${1}.keys" >> "$LOG_FILE" 2>&1
     fi
 
-    # set 0700 on $HOME/.ssh so we can access its contents
-    chmod 0700 "$DOWNLOADS/.ssh" >> "$LOG_FILE" 2>&1
-
     # set 0600 on the contents for ssh "strict-mode" compatibility
     chmod 0600 "$DOWNLOADS/.ssh/"* >> "$LOG_FILE" 2>&1
+
+    # set 0700 on $HOME/.ssh so we can still access its contents
+    chmod 0700 "$DOWNLOADS/.ssh" >> "$LOG_FILE" 2>&1
+fi
+
+##
+# OS X uses $HOME/.profile when loading terminal, not $HOME/.bashrc,
+# though $HOME/.bash_profile may work, we want to ensure it so we
+# will replace $HOME/.profile with our own that laods $HOME/.bashrc
+##
+if [ $(uname) = "Darwin" ]
+then
+    echo -ne '\n\n# load $HOME\.bashrc\nif [ -f "$HOME/.bashrc" ]\nthen\n\t. $HOME/.bashrc\nfi\n' >> "$DOWNLOADS/.profile"
 fi
 
 # echo Status
@@ -243,12 +253,6 @@ then
     shopt -s dotglob
     cp -Rf "$DOWNLOADS/"* "/etc/skel" >> "$LOG_FILE" 2>&1
     shopt -u dotglob
-fi
-
-# OS X uses $HOME/.profile not $HOME/.bashrc, so we want to add a line to tell it to load $HOME/.bashrc (but only once)
-if [ $(uname) = "Darwin" ] && ! grep ".bashrc" "$HOME/.profile" &> /dev/null
-then
-    echo -ne '\n\nif [ -f "$HOME/.bashrc" ]\nthen\n\t. $HOME/.bashrc\nfi\n' >> "$HOME/.profile"
 fi
 
 # final status message
