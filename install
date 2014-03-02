@@ -193,7 +193,7 @@ then
                 DATE=$(date '+%Y/%m/%d')
 
                 # attempt to push the key to github
-                curl -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat ~/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys  >> "$LOG_FILE" 2>&1
+                curl -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat $DOWNLOADS/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys  >> "$LOG_FILE" 2>&1
             fi
 
             # if darwin prep homebrew api key and to append to .bashrc
