@@ -97,6 +97,7 @@ Then you may use the dot-files as the root account if necessary.
 
 - vim mapping control/command + v hotkey to trigger `:set paste` and `:set nopaste`
 - shared clipboard support between vim sessions
+- log output to screen and a file using `exec` & `tee`
 
 
 ## References
