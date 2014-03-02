@@ -229,16 +229,6 @@ then
     chmod 0700 "$DOWNLOADS/.ssh" >> "$LOG_FILE" 2>&1
 fi
 
-##
-# OS X uses $HOME/.profile when loading terminal, not $HOME/.bashrc,
-# though $HOME/.bash_profile may work, we want to ensure it so we
-# will replace $HOME/.profile with our own that laods $HOME/.bashrc
-##
-if [ $(uname) = "Darwin" ]
-then
-    echo -ne '\n\n# load $HOME\.bashrc\nif [[ "$0" == *"bash" ]] && [ -f "$HOME/.bashrc" ]\nthen\n\t. $HOME/.bashrc\nfi\n' >> "$DOWNLOADS/.profile"
-fi
-
 # echo Status
 echo "installing dot files..."
 
