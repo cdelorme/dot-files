@@ -170,8 +170,8 @@ then
     if [ -n "$DL_CMD" ] && [ -n "$1" ]
     then
 
-        # check for github password ($2)
-        if [ -n "$2" ]
+        # check for github password ($2) and the user is not root
+        if [ -n "$2" ] && [ $(id -u) -ne 0 ]
         then
 
             # does a key already exist
