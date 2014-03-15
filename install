@@ -19,10 +19,8 @@ else
 fi
 SELF_PATH=$(dirname "$SELF")
 
-# define log file
-LOG_FILE="${SELF}.log"
-# another example for testing:
-# LOG_FILE="/dev/stdout"
+# redirect output to a logfile for the duration of this script
+exec &> >(tee "${SELF}.log")
 
 # define downloads & tmp file paths
 DOWNLOADS="$SELF_PATH/downloads"
@@ -35,13 +33,13 @@ then
 elif which wget &> /dev/null
 then
     DL_CMD="wget -O"
-    echo "curl package recommended..." >> "$LOG_FILE" 2>&1
+    echo "curl package recommended..."
 fi
 
 # create dependent folders
-mkdir -p "$DOWNLOADS/.vim/undo" >> "$LOG_FILE" 2>&1
-mkdir -p "$DOWNLOADS/.vim/colors" >> "$LOG_FILE" 2>&1
-mkdir -p "$TMP_FILES" >> "$LOG_FILE" 2>&1
+mkdir -p "$DOWNLOADS/.vim/undo"
+mkdir -p "$DOWNLOADS/.vim/colors"
+mkdir -p "$TMP_FILES"
 
 # check for git
 if which git &> /dev/null
@@ -55,17 +53,17 @@ then
     then
 
         # clone our own repo to grab the files
-        git clone "https://github.com/cdelorme/dot-files" "$TMP_FILES/dot-files" >> "$LOG_FILE" 2>&1
+        git clone "https://github.com/cdelorme/dot-files" "$TMP_FILES/dot-files"
     fi
 
     # clone all repositories
-    git clone "https://github.com/tpope/vim-vividchalk" "$TMP_FILES/vividchalk" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/tangphillip/SunburstVIM.git" "$TMP_FILES/sunburst" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/tristen/vim-sparkup" "$TMP_FILES/sparkup" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/Lokaltog/vim-easymotion" "$TMP_FILES/easymotion" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/tpope/vim-surround" "$TMP_FILES/surround" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/kien/ctrlp.vim" "$TMP_FILES/ctrlp" >> "$LOG_FILE" 2>&1
-    git clone "https://github.com/mattn/emmet-vim.git" "$TMP_FILES/emmet" >> "$LOG_FILE" 2>&1
+    git clone "https://github.com/tpope/vim-vividchalk" "$TMP_FILES/vividchalk"
+    git clone "https://github.com/tangphillip/SunburstVIM.git" "$TMP_FILES/sunburst"
+    git clone "https://github.com/tristen/vim-sparkup" "$TMP_FILES/sparkup"
+    git clone "https://github.com/Lokaltog/vim-easymotion" "$TMP_FILES/easymotion"
+    git clone "https://github.com/tpope/vim-surround" "$TMP_FILES/surround"
+    git clone "https://github.com/kien/ctrlp.vim" "$TMP_FILES/ctrlp"
+    git clone "https://github.com/mattn/emmet-vim.git" "$TMP_FILES/emmet"
 elif [ -n "$DL_CMD" ]
 then
 
@@ -73,23 +71,23 @@ then
     echo "downloading vim plugins..."
 
     # download colorschemes directly
-    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.github.com/tpope/vim-vividchalk/master/colors/vividchalk.vim" >> "$LOG_FILE" 2>&1
-    $DL_CMD "$DOWNLOADS/.vim/colors/sunburst.vim" "https://raw2.github.com/tangphillip/SunburstVIM/master/colors/sunburst.vim" >> "$LOG_FILE" 2>&1
+    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.github.com/tpope/vim-vividchalk/master/colors/vividchalk.vim"
+    $DL_CMD "$DOWNLOADS/.vim/colors/sunburst.vim" "https://raw2.github.com/tangphillip/SunburstVIM/master/colors/sunburst.vim"
 
     if which unzip &> /dev/null
     then
 
         # download the zipped packages
-        $DL_CMD "$TMP_FILES/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip" >> "$LOG_FILE" 2>&1
-        $DL_CMD "$TMP_FILES/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip" >> "$LOG_FILE" 2>&1
-        $DL_CMD "$TMP_FILES/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip" >> "$LOG_FILE" 2>&1
-        $DL_CMD "$TMP_FILES/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip" >> "$LOG_FILE" 2>&1
-        $DL_CMD "$TMP_FILES/emmet.zip" "https://github.com/tangphillip/SunburstVIM/archive/master.zip" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$TMP_FILES/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip"
+        $DL_CMD "$TMP_FILES/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip"
+        $DL_CMD "$TMP_FILES/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip"
+        $DL_CMD "$TMP_FILES/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip"
+        $DL_CMD "$TMP_FILES/emmet.zip" "https://github.com/tangphillip/SunburstVIM/archive/master.zip"
 
         # download our own repo if no src/
         if [ ! -d "$SELF_PATH/src/" ]
         then
-            $DL_CMD "$TMP_FILES/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip" >> "$LOG_FILE" 2>&1
+            $DL_CMD "$TMP_FILES/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip"
         fi
 
         # user feedback
@@ -98,11 +96,11 @@ then
         # decompress packages and delete the zips
         for ZIP in "$TMP_FILES/"*.zip
         do
-            unzip -q -o -d "${TMP_FILES}" "${ZIP}" >> "$LOG_FILE" 2>&1
-            rm -rf $ZIP >> "$LOG_FILE" 2>&1
+            unzip -q -o -d "${TMP_FILES}" "${ZIP}"
+            rm -rf $ZIP
         done
     else
-        echo "unzip required to install compressed contents..." >> "$LOG_FILE" 2>&1
+        echo "unzip required to install compressed contents..."
     fi
 fi
 
@@ -125,7 +123,7 @@ do
 
         # copy contents to downloads
         shopt -s dotglob
-        cp -R "$TMP_PATH/src/"* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
+        cp -R "$TMP_PATH/src/"* "$DOWNLOADS"
         shopt -u dotglob
     else
 
@@ -141,25 +139,25 @@ do
         done
 
         # merge directories recursively with $DOWNLOADS/.vim/
-        cp -Rf "$TMP_PATH/"* "$DOWNLOADS/.vim/" >> "$LOG_FILE" 2>&1
+        cp -Rf "$TMP_PATH/"* "$DOWNLOADS/.vim/"
     fi
 done
 
 # remove TMP_FILES path
-rm -rf $TMP_FILES >> "$LOG_FILE" 2>&1
+rm -rf $TMP_FILES
 
 # check for manual downloads (easier this way)
 if [ -n "$DL_CMD" ]
 then
-    $DL_CMD "$DOWNLOADS/.git-completion" "https://raw2.github.com/git/git/master/contrib/completion/git-completion.bash" >> "$LOG_FILE" 2>&1
-    $DL_CMD "$DOWNLOADS/.githelpers" "https://raw2.github.com/garybernhardt/dotfiles/master/.githelpers" >> "$LOG_FILE" 2>&1
+    $DL_CMD "$DOWNLOADS/.git-completion" "https://raw2.github.com/git/git/master/contrib/completion/git-completion.bash"
+    $DL_CMD "$DOWNLOADS/.githelpers" "https://raw2.github.com/garybernhardt/dotfiles/master/.githelpers"
 fi
 
 # if /src exists copy it to downloads else begin downloading the files from github
 if [ -d "$SELF_PATH/src/" ]
 then
     shopt -s dotglob
-    cp -R "$SELF_PATH/src/"* "$DOWNLOADS" >> "$LOG_FILE" 2>&1
+    cp -R "$SELF_PATH/src/"* "$DOWNLOADS"
     shopt -u dotglob
 fi
 
@@ -186,14 +184,14 @@ then
                 fi
 
                 # generate key
-                ssh-keygen -q -b 4096 -t rsa -N "$PASSWORD" -f "$DOWNLOADS/.ssh/id_rsa"  >> "$LOG_FILE" 2>&1
+                ssh-keygen -q -b 4096 -t rsa -N "$PASSWORD" -f "$DOWNLOADS/.ssh/id_rsa"
 
                 # add public key to trusted list on github
                 HOST=$(hostname -s)
                 DATE=$(date '+%Y/%m/%d')
 
                 # attempt to push the key to github
-                curl -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat $DOWNLOADS/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys  >> "$LOG_FILE" 2>&1
+                curl -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat $DOWNLOADS/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys
             fi
 
             # if darwin prep homebrew api key and to append to .bashrc
@@ -219,14 +217,14 @@ then
             fi
         fi
 
-        $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${1}.keys" >> "$LOG_FILE" 2>&1
+        $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${1}.keys"
     fi
 
     # set 0600 on the contents for ssh "strict-mode" compatibility
-    chmod 0600 "$DOWNLOADS/.ssh/"* >> "$LOG_FILE" 2>&1
+    chmod 0600 "$DOWNLOADS/.ssh/"*
 
     # set 0700 on $HOME/.ssh so we can still access its contents
-    chmod 0700 "$DOWNLOADS/.ssh" >> "$LOG_FILE" 2>&1
+    chmod 0700 "$DOWNLOADS/.ssh"
 fi
 
 # echo Status
@@ -241,7 +239,7 @@ shopt -u dotglob
 if [ -d "/etc/skel" ]
 then
     shopt -s dotglob
-    cp -Rf "$DOWNLOADS/"* "/etc/skel" >> "$LOG_FILE" 2>&1
+    cp -Rf "$DOWNLOADS/"* "/etc/skel"
     shopt -u dotglob
 fi
 
