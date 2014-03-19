@@ -18,7 +18,7 @@ if [ $(uname) = "Darwin" ]
 then
 
     # Append brew path first
-    export PATH="/usr/local/bin:$PATH"
+    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
 
     # Set library visibility
     chflags nohidden "$HOME/Library"
