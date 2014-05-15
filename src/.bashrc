@@ -112,7 +112,7 @@ fi
 # check for go to add GOPATH
 if which go &> /dev/null
 then
-    mkdir -p "${HOME}/go"
+    mkdir -p "${HOME}/go" &> /dev/null
     export GOPATH="${HOME}/go"
     export PATH="${PATH}:${GOPATH}"
 fi
