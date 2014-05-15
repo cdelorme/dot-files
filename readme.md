@@ -5,7 +5,7 @@ These are my dot files.  There are many like them, but these are mine.
 
 My install script and related are licensed under GPLv3, they will forever remain free to edit and modify provided you grant the same courtesy to future generations.
 
-**Any files with names matching what my dot-files replaces will be replaced and overwritten; be aware and backup anything you value before executing.**
+**This script no-longer overwrites existing dot-files unless you ask it to! (though a backup is still recommended)**
 
 
 ## Features
@@ -37,11 +37,11 @@ My dot-files comes with an `install` bash script.  This script will look for loc
 
 You can download just the install script and run it:
 
-    wget "https://raw2.github.com/cdelorme/dot-files/master/install"
+    wget "https://raw.github.com/cdelorme/dot-files/master/install"
 
 or:
 
-    curl -o "install" "https://raw2.github.com/cdelorme/dot-files/master/install"
+    curl -o "install" "https://raw.github.com/cdelorme/dot-files/master/install"
 
 then:
 
@@ -50,23 +50,32 @@ then:
 
 _Alternatively you can clone the repository and run `./install` inside it._
 
+This will create a `downloads/` folder with all of the files that you may then copy to your `$HOME/` folder manually.
+
+
+**The script now accepts proper arguments.  For a more detailed list use `./install -h`**.
+
+To automatically copy the files to your `$HOME/` folder **overwriting any files already there**:
+
+    ./install -a
+
+To install dot-files into `/etc/skel` (for linux systems):
+
+    ./install --skel
 
 If you want to automatically pull your accounts github pub keys just add a github username:
 
-    ./install username
+    ./install -u username
 
 To automate ssh keygen and osx homebrew token processing:
 
-    ./install username github_password
+    ./install -u username -p password
 
-If you want the ssh key it generates to have a system password (not shared with your github password) then you can do this:
+_It will generate a key only if no default key already exists, and will not run if the user is root._
 
-    ./install username githubPassword userPassword
+If you want to specify a different key password than your github account (such as a user or system password):
 
-
-_If the install script is run with privileges (eg. as root or from sudo) then it will not attempt to create an ssh key or osx homebrew token.  This is because the root account does not need either of these._
-
-**As I warned initially, the install scripts file copy will overwrite any files with conflicting names, so make a backup of any files you value in your home folder beforehand.**
+    ./install -u username -p password --ssl-password=secondpassword
 
 
 #### Installer Requirements
@@ -97,7 +106,6 @@ Then you may use the dot-files as the root account if necessary.
 
 - vim mapping control/command + v hotkey to trigger `:set paste` and `:set nopaste`
 - shared clipboard support between vim sessions
-- log output to screen and a file using `exec` & `tee`
 
 
 ## References
