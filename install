@@ -20,11 +20,68 @@ fi
 SELF_PATH=$(dirname "$SELF")
 
 # redirect output to a logfile for the duration of this script
-exec &> >(tee "${SELF}.log")
+exec &> >(tee "$SELF.log")
 
-# define downloads & tmp file paths
+# define downloads & tmp file paths & default for installing skel files
 DOWNLOADS="$SELF_PATH/downloads"
 TMP_FILES="$DOWNLOADS/tmp"
+INSTALL_SKEL=false
+
+# parse arguments
+while test $# -gt 0;
+do
+    case "$1" in
+            -h|--help)
+                    echo "$0 - install dot-files for convenience"
+                    echo " "
+                    echo "$0 [options]"
+                    echo " "
+                    echo "options:"
+                    echo "-h, --help                 show brief help"
+
+                    echo "-s, --skel                 install files to skel (requires root privileges)"
+                    echo "-u, --username=USERNAME    github username/account"
+                    echo "-p, --password=PASSWORD    github password"
+                    echo "--ssl-password=PASSWORD    local password to generate ssl with"
+                    exit 0
+                    ;;
+            -s|--skel)
+                shift
+                INSTALL_SKEL=true;
+                ;;
+            -u)
+                shift
+                if [ $# -gt 0 ]
+                then
+                    GITHUB_USERNAME=$1
+                fi
+                shift
+                ;;
+            --username*)
+                GITHUB_USERNAME=`echo $1 | sed -e 's/^[^=]*=//g'`
+                shift
+                ;;
+            -p)
+                shift
+                if [ $# -gt 0 ]
+                then
+                    GITHUB_PASSWORD=$1
+                fi
+                shift
+                ;;
+            --password*)
+                GITHUB_PASSWORD=`echo $1 | sed -e 's/^[^=]*=//g'`
+                shift
+                ;;
+            --ssl-password*)
+                SSL_PASSWORD=`echo $1 | sed -e 's/^[^=]*=//g'`
+                shift
+                ;;
+            *)
+                break
+                ;;
+    esac
+done
 
 # check for wget or curl to download all files
 if which curl &> /dev/null
@@ -96,7 +153,7 @@ then
         # decompress packages and delete the zips
         for ZIP in "$TMP_FILES/"*.zip
         do
-            unzip -q -o -d "${TMP_FILES}" "${ZIP}"
+            unzip -q -o -d "$TMP_FILES" "$ZIP"
             rm -rf $ZIP
         done
     else
@@ -164,34 +221,33 @@ fi
 if [ -d "$DOWNLOADS/.ssh" ]
 then
 
-    # custom argument parsing if at least a username ($1) was supplied
-    if [ -n "$DL_CMD" ] && [ -n "$1" ]
+    # check if github_username is set
+    if [ -n "$DL_CMD" ] && [ -n "$GITHUB_USERNAME" ]
     then
 
-        # check for github password ($2) and the user is not root
-        if [ -n "$2" ] && [ $(id -u) -ne 0 ]
+        # check if github password was supplied (and not root user)
+        if [ -n "$GITHUB_PASSWORD" ] && [ $(id -u) -ne 0 ]
         then
 
             # does a key already exist
             if ! [ -f "$HOME/.ssh/id_rsa" ]
             then
 
-                # use user password ($3) or fallback to github password ($2)
-                PASSWORD="$2"
-                if [ -n "$3" ]
+                # if ssl password was supplied use it, else use github password for key
+                if [ -z "$SSL_PASSWORD" ]
                 then
-                    PASSWORD="$3"
+                    SSL_PASSWORD="$GITHUB_PASSWORD"
                 fi
 
                 # generate key
-                ssh-keygen -q -b 4096 -t rsa -N "$PASSWORD" -f "$DOWNLOADS/.ssh/id_rsa"
+                ssh-keygen -q -b 4096 -t rsa -N "$SSL_PASSWORD" -f "$DOWNLOADS/.ssh/id_rsa"
 
                 # add public key to trusted list on github
                 HOST=$(hostname -s)
                 DATE=$(date '+%Y/%m/%d')
 
                 # attempt to push the key to github
-                curl -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat $DOWNLOADS/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys
+                curl -i -u "${GITHUB_USERNAME}:${GITHUB_PASSWORD}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat $DOWNLOADS/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys
             fi
 
             # if darwin prep homebrew api key and to append to .bashrc
@@ -199,12 +255,12 @@ then
             then
 
                 # Request keys from github
-                keys=$(curl -s -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X GET https://api.github.com/authorizations)
+                keys=$(curl -s -i -u "${GITHUB_USERNAME}:${GITHUB_PASSWORD}" -H "Content-Type: application/json" -H "Accept: application/json" -X GET https://api.github.com/authorizations)
                 if echo $keys | grep "homebrew" &> /dev/null
                 then
                     token=$(echo "${keys#*homebrew}" | grep token | head -n1 | tr -d '":,' | awk '{print $2}')
                 else
-                    keys=$(curl -i -u "${1}:${2}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"scopes\":[\"gist\",\"repo\",\"user\"],\"note\":\"homebrew\"}" https://api.github.com/authorizations)
+                    keys=$(curl -i -u "${GITHUB_USERNAME}:${GITHUB_PASSWORD}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"scopes\":[\"gist\",\"repo\",\"user\"],\"note\":\"homebrew\"}" https://api.github.com/authorizations)
                     token=$(echo "$keys" | grep token | head -n1 | tr -d '":,' | awk '{print $2}')
                 fi
 
@@ -217,7 +273,7 @@ then
             fi
         fi
 
-        $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${1}.keys"
+        $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${GITHUB_USERNAME}.keys"
     fi
 
     # set 0600 on the contents for ssh "strict-mode" compatibility
@@ -235,8 +291,8 @@ shopt -s dotglob
 cp -Rf "$DOWNLOADS/"* "$HOME"
 shopt -u dotglob
 
-# also try to install them to /etc/skel if the path exists & adjust .ssh permissions
-if [ -d "/etc/skel" ]
+# if /etc/skel exists, user is root, and flag was set then try to install skel
+if [ -d "/etc/skel" ] && [ $(id -u) -ne 0 ] && $INSTALL_SKEL
 then
     shopt -s dotglob
     cp -Rf "$DOWNLOADS/"* "/etc/skel"
