@@ -56,6 +56,12 @@ gitify ()
             # Acquire the branch name
             git_branch=$(echo "${git_works}" | sed -n 's/^\*[ ]*//p')
 
+            # if branch name is (no branch) get commit hash instead
+            if [ "${git_branch}" == "(no branch)" ]
+            then
+                git_branch=$(git rev-parse --verify --short HEAD)
+            fi
+
             if $GIT_PROMPT_BRANCH_ONLY
             then
 
