@@ -26,6 +26,7 @@ exec &> >(tee "$SELF.log")
 DOWNLOADS="$SELF_PATH/downloads"
 TMP_FILES="$DOWNLOADS/tmp"
 INSTALL_SKEL=false
+AUTO_INSTALL=false
 
 # parse arguments
 while test $# -gt 0;
@@ -40,6 +41,7 @@ do
                     echo "-h, --help                 show brief help"
 
                     echo "-s, --skel                 install files to skel (requires root privileges)"
+                    echo "-a, --auto                 automatically overwrite existing $HOME/ dot-files"
                     echo "-u, --username=USERNAME    github username/account"
                     echo "-p, --password=PASSWORD    github password"
                     echo "--ssl-password=PASSWORD    local password to generate ssl with"
@@ -47,7 +49,11 @@ do
                     ;;
             -s|--skel)
                 shift
-                INSTALL_SKEL=true;
+                INSTALL_SKEL=true
+                ;;
+            -c|--confirm)
+                shift
+                AUTO_INSTALL=true
                 ;;
             -u)
                 shift
@@ -283,13 +289,17 @@ then
     chmod 0700 "$DOWNLOADS/.ssh"
 fi
 
-# echo Status
-echo "installing dot files..."
+# install the files to home (if auto)
+if $AUTO_INSTALL
+then
 
-# install the files to home
-shopt -s dotglob
-cp -Rf "$DOWNLOADS/"* "$HOME"
-shopt -u dotglob
+    # echo Status
+    echo "installing dot files..."
+
+    shopt -s dotglob
+    cp -Rf "$DOWNLOADS/"* "$HOME"
+    shopt -u dotglob
+fi
 
 # if /etc/skel exists, user is root, and flag was set then try to install skel
 if [ -d "/etc/skel" ] && [ $(id -u) -ne 0 ] && $INSTALL_SKEL
