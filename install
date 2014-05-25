@@ -6,10 +6,6 @@ then
     clear
 fi
 
-# Give the user 5 seconds to cancel
-echo "Preparing to install, cancel within 5 seconds via ctrl+c, or wait until the script finishes."
-sleep 5
-
 # get script info
 if [ $(uname) = "Darwin" ]
 then
@@ -18,9 +14,6 @@ else
     SELF=$(readlink -f "$0")
 fi
 SELF_PATH=$(dirname "$SELF")
-
-# redirect output to a logfile for the duration of this script
-exec &> >(tee "$SELF.log")
 
 # define downloads & tmp file paths & default for installing skel files
 DOWNLOADS="$SELF_PATH/downloads"
@@ -39,7 +32,6 @@ do
                     echo " "
                     echo "options:"
                     echo "-h, --help                 show brief help"
-
                     echo "-s, --skel                 install files to skel (requires root privileges)"
                     echo "-a, --auto                 automatically overwrite existing $HOME/ dot-files"
                     echo "-u, --username=USERNAME    github username/account"
@@ -51,7 +43,7 @@ do
                 shift
                 INSTALL_SKEL=true
                 ;;
-            -c|--confirm)
+            -a|--auto)
                 shift
                 AUTO_INSTALL=true
                 ;;
@@ -88,6 +80,13 @@ do
                 ;;
     esac
 done
+
+# Give the user 5 seconds to cancel
+echo "Preparing to install, cancel within 5 seconds via ctrl+c, or wait until the script finishes."
+sleep 5
+
+# redirect output to a logfile for the duration of this script
+exec &> >(tee "$SELF.log")
 
 # check for wget or curl to download all files
 if which curl &> /dev/null
