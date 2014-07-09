@@ -289,7 +289,7 @@ then
 fi
 
 # install the files to home (if auto)
-if $AUTO_INSTALL
+if [ $AUTO_INSTALL ]
 then
 
     # echo Status
@@ -301,7 +301,7 @@ then
 fi
 
 # if /etc/skel exists, user is root, and flag was set then try to install skel
-if [ -d "/etc/skel" ] && [ $(id -u) -ne 0 ] && $INSTALL_SKEL
+if [ -d "/etc/skel" ] && [ $(id -u) -eq 0 ] && [ $INSTALL_SKEL ]
 then
     shopt -s dotglob
     cp -Rf "$DOWNLOADS/"* "/etc/skel"
