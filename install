@@ -20,6 +20,7 @@ DOWNLOADS="$SELF_PATH/downloads"
 TMP_FILES="$DOWNLOADS/tmp"
 INSTALL_SKEL=false
 AUTO_INSTALL=false
+GITHUB_PUBLIC_KEYS=false
 
 # parse arguments
 while test $# -gt 0;
@@ -34,6 +35,7 @@ do
                     echo "-h, --help                 show brief help"
                     echo "-s, --skel                 install files to skel (requires root privileges)"
                     echo "-a, --auto                 automatically overwrite existing $HOME/ dot-files"
+                    echo "-k, --keys                 download keys from github (dependent on github username)"
                     echo "-u, --username=USERNAME    github username/account"
                     echo "-p, --password=PASSWORD    github password"
                     echo "--ssl-password=PASSWORD    local password to generate ssl with"
@@ -46,6 +48,10 @@ do
             -a|--auto)
                 shift
                 AUTO_INSTALL=true
+                ;;
+            -k|--keys)
+                shift
+                GITHUB_PUBLIC_KEYS=true
                 ;;
             -u)
                 shift
@@ -121,11 +127,8 @@ then
     # clone all repositories
     git clone "https://github.com/tpope/vim-vividchalk" "$TMP_FILES/vividchalk"
     git clone "https://github.com/tangphillip/SunburstVIM.git" "$TMP_FILES/sunburst"
-    git clone "https://github.com/tristen/vim-sparkup" "$TMP_FILES/sparkup"
-    git clone "https://github.com/Lokaltog/vim-easymotion" "$TMP_FILES/easymotion"
-    git clone "https://github.com/tpope/vim-surround" "$TMP_FILES/surround"
+    git clone "https://github.com/elzr/vim-json" "$TMP_FILES/json"
     git clone "https://github.com/kien/ctrlp.vim" "$TMP_FILES/ctrlp"
-    git clone "https://github.com/mattn/emmet-vim.git" "$TMP_FILES/emmet"
 elif [ -n "$DL_CMD" ]
 then
 
@@ -140,10 +143,8 @@ then
     then
 
         # download the zipped packages
-        $DL_CMD "$TMP_FILES/sparkup.zip" "https://github.com/tristen/vim-sparkup/archive/master.zip"
-        $DL_CMD "$TMP_FILES/easymotion.zip" "https://github.com/Lokaltog/vim-easymotion/archive/master.zip"
-        $DL_CMD "$TMP_FILES/surround.zip" "https://github.com/tpope/vim-surround/archive/master.zip"
         $DL_CMD "$TMP_FILES/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip"
+        $DL_CMD "$TMP_FILES/ctrlp.zip" "https://github.com/elzr/vim-json/archive/master.zip"
         $DL_CMD "$TMP_FILES/emmet.zip" "https://github.com/tangphillip/SunburstVIM/archive/master.zip"
 
         # download our own repo if no src/
@@ -278,7 +279,10 @@ then
             fi
         fi
 
-        $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${GITHUB_USERNAME}.keys"
+        if [ $GITHUB_PUBLIC_KEYS ]
+        then
+            $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${GITHUB_USERNAME}.keys"
+        fi
     fi
 
     # set 0600 on the contents for ssh "strict-mode" compatibility
