@@ -6,13 +6,6 @@
 # set our editor
 export EDITOR=vim
 
-# create a $HOME/bin directory if not exists & add to path (to front)
-if [ -d "$HOME/bin" ]
-then
-    mkdir -p "$HOME/bin" &> /dev/null
-fi
-export PATH="$HOME/bin:$PATH"
-
 # Check for OS X
 if [ $(uname) = "Darwin" ]
 then
@@ -23,6 +16,13 @@ then
     # Set library visibility
     chflags nohidden "$HOME/Library"
 fi
+
+# create a $HOME/.bin directory if not exists & add to path (to front)
+if [ -d "$HOME/.bin" ]
+then
+    mkdir -p "$HOME/.bin" &> /dev/null
+fi
+export PATH="$HOME/.bin:$PATH"
 
 # shortened time format output
 export TIMEFORMAT="r: %R, u: %U, s: %S"
@@ -69,8 +69,8 @@ then
 fi
 
 # if sublime text is installed locally, makde sure a local subl exists
-if [ $(uname) != "Darwin" ] && [ ! -f "$HOME/bin/subl" ] && [ -f "$HOME/applications/sublime_text/sublime_text" ];then
-    ln -s "$HOME/applications/sublime_text/sublime_text" "$HOME/bin/subl"
+if [ $(uname) != "Darwin" ] && [ ! -f "$HOME/.bin/subl" ] && [ -f "$HOME/applications/sublime_text/sublime_text" ];then
+    ln -s "$HOME/applications/sublime_text/sublime_text" "$HOME/.bin/subl"
 fi
 
 # colored terminal
@@ -114,8 +114,8 @@ if which go &> /dev/null
 then
     if [ -d "${HOME}/.go" ]
     then
-        mkdir -p "${HOME}/.go/"{src,bin,pkg} &> /dev/null
+        mkdir -p "${HOME}/.go/"{src,pkg} &> /dev/null
     fi
     export GOPATH="${HOME}/.go"
-    ln -sf "${HOME}/bin" "${GOPATH}/bin"
+    ln -sf "${HOME}/bin" "${GOPATH}/.bin"
 fi
