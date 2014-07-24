@@ -70,7 +70,7 @@ To install dot-files into `/etc/skel` (for linux systems):
 
 If you want to automatically pull your accounts github pub keys just add a github username:
 
-    ./install -u username
+    ./install -u username -k
 
 To automate ssh keygen and osx homebrew token processing:
 
