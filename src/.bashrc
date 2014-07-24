@@ -112,10 +112,10 @@ fi
 # check for go to add GOPATH
 if which go &> /dev/null
 then
-    if [ -d "${HOME}/go" ]
+    if [ -d "${HOME}/.go" ]
     then
-        mkdir -p "${HOME}/go/"{src,bin,pkg} &> /dev/null
+        mkdir -p "${HOME}/.go/"{src,bin,pkg} &> /dev/null
     fi
-    export GOPATH="${HOME}/go"
-    export PATH="${PATH}:${GOPATH}/bin"
+    export GOPATH="${HOME}/.go"
+    ln -sf "${HOME}/bin" "${GOPATH}/bin"
 fi
