@@ -18,8 +18,13 @@ Features include:
 - enhanced prompt with colors to cleanly display more information
 - automatic detailed git information when in a git project, giving you an instant summary
 - togglable and extendable prompt features
-- fully configured vim with common plugins
-- **optional** automatic pulling of github public keys to ~/.ssh/authorized_keys
+- fully configured vim /w common plugins:
+    - [ctrlp](https://github.com/elzr/vim-json)
+    - [json syntax support](https://github.com/kien/ctrlp.vim)
+    - golang go fmt on w/wq/x
+    - python tabs to spaces on w/wq/x
+    - tab completion
+- **optional** automatically pull `https://github.com/username.keys` to `~/.ssh/authorized_keys`
 - **optional** automatic ssh-keygen and push to github
 - **optional** automatic osx homebrew github token creation
 
