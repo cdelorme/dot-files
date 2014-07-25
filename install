@@ -105,9 +105,13 @@ then
 fi
 
 # create dependent folders
-mkdir -p "$DOWNLOADS/.vim/undo"
-mkdir -p "$DOWNLOADS/.vim/colors"
-mkdir -p "$TMP_FILES"
+mkdir -p "$DOWNLOADS/.vim/undo" "$DOWNLOADS/.vim/colors" "$TMP_FILES"
+
+# if go is installed, grab the go vim plugin for it
+if which go &> /dev/null
+then
+    cp -R "$(go env GOROOT)/misc/vim/" "$DOWNLOADS/.vim"
+fi
 
 # check for git
 if which git &> /dev/null
@@ -290,12 +294,6 @@ then
 
     # set 0700 on $HOME/.ssh so we can still access its contents
     chmod 0700 "$DOWNLOADS/.ssh"
-fi
-
-# if go is installed, grab the go vim plugin for it
-if which go &> /dev/null
-then
-    cp -R "$(go env GOROOT)/misc/vim/" "$DOWNLOADS/.vim"
 fi
 
 # install the files to home (if auto)

@@ -5,3 +5,7 @@
 # Ignore downloads files (except .gitignore to keep folder)
 downloads/*
 !downloads/.gitignore
+
+# ignore log file
+install.log
+
