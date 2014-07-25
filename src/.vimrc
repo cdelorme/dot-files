@@ -64,20 +64,16 @@ set foldmethod=syntax
 
 " additional file recognition
 au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}   set filetype=markdown
-au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}.{des3,des,bf,bfa,aes,idea,cast,rc2,rc4,rc5,desx} set filetype=markdown
 
 " missing syntax recognition
 highlight BadWhitespace ctermbg=red guibg=red
 au BufRead,BufNewFile *.py match BadWhitespace /*\t\*/
 au BufRead,BufNewFile *.py match BadWhitespace /\s\+$/
 
-" save on focus lost
-au FocusLost * :wa
+" autoconvert tabs to spaces (disabled by default for various reasons)
+" au BufWritePre * :%s/\t/    /e
 
-" autoconvert tabs to spaces
-au BufWritePre * :%s/\t/    /e
-
-" remove whitespace automatically on save
+" remove trailing whitespace automatically on save
 au BufWritePre * :%s/\s\+$//e
 
 " remove windows carriage returns automatically

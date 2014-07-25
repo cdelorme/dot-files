@@ -292,6 +292,12 @@ then
     chmod 0700 "$DOWNLOADS/.ssh"
 fi
 
+# if go is installed, grab the go vim plugin for it
+if which go &> /dev/null
+then
+    cp -R "$(go env GOROOT)/misc/vim/" "$DOWNLOADS/.vim"
+fi
+
 # install the files to home (if auto)
 if [ $AUTO_INSTALL ]
 then
