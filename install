@@ -311,7 +311,7 @@ then
 fi
 
 # if /etc/skel exists, user is root, and flag was set then try to install skel
-if [ -d "/etc/skel" ] && [ $(id -u) -eq 0 ] && [ $INSTALL_SKEL ]
+if [ $INSTALL_SKEL ] && [ -d "/etc/skel" ] && [ $(id -u) -eq 0 ]
 then
     shopt -s dotglob
     cp -Rf "$DOWNLOADS/"* "/etc/skel"
