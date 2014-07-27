@@ -91,5 +91,5 @@ endfunction
 :set dictionary="/usr/dict/words"
 
 " load plugins
-:silent! set runtimepath^=~/.vim/bundle/ctrlp.vim
-:silent! :helptags ~/.vim/doc
+:silent! set runtimepath^=$HOME/.vim/bundle/ctrlp.vim
+:silent! :helptags $HOME/.vim/doc
