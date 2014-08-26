@@ -119,3 +119,9 @@ then
     export GOPATH="${HOME}/.go"
     ln -sf "${HOME}/bin" "${GOPATH}/.bin"
 fi
+
+# handle keychain /w id_rsa
+if which keychain &> /dev/null && [ -f "${HOME}/.ssh/id_rsa" ]
+then
+    keychain "${HOME}/.ssh/id_rsa" && . "${HOME}/.keychain/dev-sh"
+fi
