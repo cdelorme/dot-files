@@ -23,7 +23,7 @@ AUTO_INSTALL=false
 GITHUB_PUBLIC_KEYS=false
 
 # parse arguments
-while test $# -gt 0;
+while [ $# -gt 0 ]
 do
     case "$1" in
             -h|--help)
@@ -92,7 +92,10 @@ echo "Preparing to install, cancel within 5 seconds via ctrl+c, or wait until th
 sleep 5
 
 # redirect output to a logfile for the duration of this script
-exec &> >(tee "$SELF.log")
+if ! exec &> >(tee "$SELF.log")
+then
+    echo "System does not support process substitution; Script output will not be logged."
+fi
 
 # check for wget or curl to download all files
 if which curl &> /dev/null
