@@ -57,17 +57,6 @@ then
     . "/usr/share/doc/pkgfile/command-not-found.bash"
 fi
 
-# if no autostart dir exists create it
-if [ $(uname) != "Darwin" ] && [ ! -d "$HOME/.config/autostart" ];then
-    mkdir -p "$HOME/.config/autostart"
-fi
-
-# if guake exists add it to startup items
-if [ $(uname) != "Darwin" ] && which guake &> /dev/null && [ ! -f "$HOME/.config/autostart/guake.desktop" ] && [ -f "/usr/share/applications/guake.desktop" ]
-then
-    cp "/usr/share/applications/guake.desktop" "$HOME/.config/autostart/guake.desktop"
-fi
-
 # if sublime text is installed locally, makde sure a local subl exists
 if [ $(uname) != "Darwin" ] && [ ! -f "$HOME/.bin/subl" ] && [ -f "$HOME/applications/sublime_text/sublime_text" ];then
     ln -s "$HOME/applications/sublime_text/sublime_text" "$HOME/.bin/subl"
