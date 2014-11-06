@@ -21,7 +21,7 @@ then
 fi
 
 # create a $HOME/.bin directory if not exists & add to path (to front)
-if [ -d "$HOME/.bin" ]
+if [ ! -d "$HOME/.bin" ]
 then
     mkdir -p "$HOME/.bin" &> /dev/null
 fi
