@@ -3,9 +3,6 @@
 # don't continue if not interactive
 [ -z "$PS1" ] && return
 
-# don't run if already loaded
-[ -n "${ENHANCED_PROMPT+x}" ] && return
-
 # set our editor
 export EDITOR=vim
 
