@@ -18,12 +18,12 @@ Features include:
 - enhanced prompt with colors to cleanly display more information
 - automatic detailed git information when in a git project, giving you an instant summary
 - togglable and extendable prompt features
+- autoloads ssh keys if able
 - fully configured vim /w common plugins:
     - [ctrlp](https://github.com/elzr/vim-json)
     - [json syntax support](https://github.com/kien/ctrlp.vim)
     - golang go fmt on w/wq/x
-    - python tabs to spaces on w/wq/x
-    - tab completion
+    - _simple_ tab completion
 - **optional** automatically pull `https://github.com/username.keys` to `~/.ssh/authorized_keys`
 - **optional** automatic ssh-keygen and push to github
 - **optional** automatic osx homebrew github token creation
@@ -85,10 +85,11 @@ If you want to specify a different key password than your github account (such a
 
 #### Installer Requirements
 
-- must be executed from a directory you have write permissions on
 - remote install, vim plugins, and colorscheme require either git, or unzip and curl or wget
 
-_The script will fail silently, skipping any tasks it cannot perform.  You can check for failed actions in the log file it generates._
+_Failed operations are spit into the relative logfile._
+
+**These dot files are now also compatible with Windows `git bash`!**
 
 
 ## OS X
