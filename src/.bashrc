@@ -60,11 +60,6 @@ then
     . "/usr/share/doc/pkgfile/command-not-found.bash"
 fi
 
-# if sublime text is installed locally, makde sure a local subl exists
-if [ $(uname) != "Darwin" ] && [ ! -f "$HOME/.bin/subl" ] && [ -f "$HOME/applications/sublime_text/sublime_text" ];then
-    ln -s "$HOME/applications/sublime_text/sublime_text" "$HOME/.bin/subl"
-fi
-
 # colored terminal
 if [ $(uname) = "Darwin" ]
 then
@@ -90,19 +85,9 @@ then
     XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.local/share"
 fi
 
-# configure $HOME/.prompt addons
-export ENHANCED_PROMPT=true
-export GIT_PROMPT_ON=true
-export GIT_PROMPT_DETAILED=true
-
-# load prompt addons
-if [ -f "$HOME/.git-completion" ]
-then
-    . "$HOME/.git-completion"
-fi
-if [ -f "$HOME/.promptrc" ]
-then
-    . "$HOME/.promptrc"
+# if sublime text is installed locally, makde sure a local subl exists
+if [ $(uname) != "Darwin" ] && [ ! -f "$HOME/.bin/subl" ] && [ -f "$HOME/applications/sublime_text/sublime_text" ];then
+    ln -s "$HOME/applications/sublime_text/sublime_text" "$HOME/.bin/subl"
 fi
 
 # check for go to add GOPATH
@@ -115,6 +100,21 @@ then
     export GOPATH="${HOME}/.go"
     ln -sf "${HOME}/.bin" "${GOPATH}/bin"
 fi
+
+# load prompt addons
+if [ -f "$HOME/.git-completion" ]
+then
+    . "$HOME/.git-completion"
+fi
+if [ -f "$HOME/.promptrc" ]
+then
+    . "$HOME/.promptrc"
+fi
+
+# configure $HOME/.prompt addons
+export ENHANCED_PROMPT=true
+export GIT_PROMPT_ON=true
+export GIT_PROMPT_DETAILED=true
 
 # load ssh keys on first-run (will prompt for passwords)
 ssh-add -l &> /dev/null
