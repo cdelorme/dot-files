@@ -224,12 +224,6 @@ then
     $DL_CMD "$DOWNLOADS/.githelpers" "https://raw.githubusercontent.com/garybernhardt/dotfiles/master/.githelpers"
 fi
 
-# append existing authorized_keys to new one (just in case)
-if [ -f "$HOME/.ssh/authorized_keys" ]
-then
-    cat "$HOME/.ssh/authorized_keys" >> "$DOWNLOADS/.ssh/authorized_keys"
-fi
-
 # if /src exists copy it to downloads else begin downloading the files from github
 if [ -d "$SELF_PATH/src/" ]
 then
@@ -296,6 +290,13 @@ then
         if [ "$GITHUB_PUBLIC_KEYS" = true ]
         then
             $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${GITHUB_USERNAME}.keys"
+
+            # append existing authorized_keys to new one (just in case)
+            if [ -f "$HOME/.ssh/authorized_keys" ]
+            then
+                cat "$HOME/.ssh/authorized_keys" >> "$DOWNLOADS/.ssh/authorized_keys"
+                rm "$DOWNLOADS/.ssh/authorized_keys"
+            fi
         fi
     fi
 
