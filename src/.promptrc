@@ -53,7 +53,7 @@ gitify ()
 {
 
     # Check GIT_PROMPT_ON before running git status check
-    if $GIT_PROMPT_ON
+    if [ "$GIT_PROMPT_ON" = true ]
     then
 
         # Verify we are in a git repo
@@ -72,7 +72,7 @@ gitify ()
                 git_branch=$(git rev-parse --verify --short HEAD)
             fi
 
-            if $GIT_PROMPT_BRANCH_ONLY
+            if [ "$GIT_PROMPT_BRANCH_ONLY" = true ]
             then
 
                 # Append branch only
@@ -93,7 +93,7 @@ gitify ()
                     prompt_string="${prompt_string} [${c_red}${git_branch}${c_sgr0}"
 
                     # Do we want to print detailed?
-                    if $GIT_PROMPT_DETAILED
+                    if [ "$GIT_PROMPT_DETAILED" = true ]
                     then
 
                         # Currently this script only attends to:
@@ -170,7 +170,7 @@ gitify ()
 colorify ()
 {
     # Confirm enhanced prompt
-    if $ENHANCED_PROMPT
+    if [ "$ENHANCED_PROMPT" = true ]
     then
 
         # If Linux display milliseconds (OSX does not support %N `data`, neither does Windows git-bash)
