@@ -287,7 +287,7 @@ then
             fi
         fi
 
-        if [ $GITHUB_PUBLIC_KEYS ]
+        if [ "$GITHUB_PUBLIC_KEYS" = true ]
         then
             $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${GITHUB_USERNAME}.keys"
         fi
@@ -307,7 +307,7 @@ then
 fi
 
 # install the files to home (if auto)
-if [ $AUTO_INSTALL ]
+if [ "$AUTO_INSTALL" = true ]
 then
 
     # echo Status
@@ -319,7 +319,7 @@ then
 fi
 
 # if /etc/skel exists, user is root, and flag was set then try to install skel
-if [ $INSTALL_SKEL ] && [ -d "/etc/skel" ] && [ $(id -u) -eq 0 ]
+if [ "$INSTALL_SKEL" = true ] && [ -d "/etc/skel" ] && [ $(id -u) -eq 0 ]
 then
     shopt -s dotglob
     cp -Rf "$DOWNLOADS/"* "/etc/skel"
