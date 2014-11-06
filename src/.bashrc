@@ -105,7 +105,7 @@ fi
 # check for go to add GOPATH
 if which go &> /dev/null
 then
-    if ! [ -d "${HOME}/.go" ]
+    if [ ! -d "${HOME}/.go" ]
     then
         mkdir -p "${HOME}/.go/"{src,pkg} &> /dev/null
     fi
