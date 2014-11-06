@@ -3,6 +3,9 @@
 # don't continue if not interactive
 [ -z "$PS1" ] && return
 
+# don't run if already loaded
+[ -n "${ENHANCED_PROMPT+x}" ] && return
+
 # set our editor
 export EDITOR=vim
 
@@ -110,8 +113,14 @@ then
     ln -sf "${HOME}/.bin" "${GOPATH}/bin"
 fi
 
-# handle keychain /w id_rsa
-if which keychain &> /dev/null && [ -f "${HOME}/.ssh/id_rsa" ]
+# load ssh keys on first-run (will prompt for passwords)
+ssh-add -l &> /dev/null
+sshout=$?
+if [ $sshout -eq 2 ]
 then
-    keychain "${HOME}/.ssh/id_rsa" && . "${HOME}/.keychain/dev-sh"
+    eval $(ssh-agent) &> /dev/null
+    ssh-add
+elif [ $sshout -eq 1 ]
+then
+    ssh-add
 fi
