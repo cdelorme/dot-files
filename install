@@ -292,7 +292,7 @@ then
             $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${GITHUB_USERNAME}.keys"
 
             # append existing authorized_keys to new one (just in case)
-            if [ -f "$HOME/.ssh/authorized_keys" ]
+            if [ -f "$HOME/.ssh/authorized_keys" ] && [ "$AUTO_INSTALL" = true ]
             then
                 cat "$HOME/.ssh/authorized_keys" >> "$DOWNLOADS/.ssh/authorized_keys"
                 rm "$DOWNLOADS/.ssh/authorized_keys"
