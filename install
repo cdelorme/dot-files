@@ -282,7 +282,7 @@ then
                 then
 
                     # push token into .bashrc
-                    echo -ne "\n# homebrew github token (remove rate-limiting)\nexport HOMEBREW_GITHUB_API_TOKEN=${token}" >> "$DOWNLOADS/.bash_profile"
+                    echo -ne "\n# homebrew github token (remove rate-limiting)\nexport HOMEBREW_GITHUB_API_TOKEN=${token}" >> "$DOWNLOADS/.bashrc"
                 fi
             fi
         fi
@@ -307,10 +307,11 @@ then
     chmod 0700 "$DOWNLOADS/.ssh"
 fi
 
-# remove ssh config for windows
+# remove ssh config & bash_profile for windows
 if [[ $(uname) == MINGW* ]]
 then
     rm -rf "$DOWNLOADS/.ssh/config"
+    rm -rf "$DOWNLOADS/.bash_profile"
 fi
 
 # install the files to home (if auto)
