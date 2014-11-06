@@ -214,8 +214,8 @@ rm -rf $TMP_FILES
 # check for manual downloads (easier this way)
 if [ -n "$DL_CMD" ]
 then
-    $DL_CMD "$DOWNLOADS/.git-completion" "https://raw2.github.com/git/git/master/contrib/completion/git-completion.bash"
-    $DL_CMD "$DOWNLOADS/.githelpers" "https://raw2.github.com/garybernhardt/dotfiles/master/.githelpers"
+    $DL_CMD "$DOWNLOADS/.git-completion" "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash"
+    $DL_CMD "$DOWNLOADS/.githelpers" "https://raw.githubusercontent.com/garybernhardt/dotfiles/master/.githelpers"
 fi
 
 # append existing authorized_keys to new one (just in case)
