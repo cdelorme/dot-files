@@ -7,12 +7,7 @@ then
 fi
 
 # get script info
-if [ $(uname) = "Darwin" ]
-then
-    SELF=$(cd $(dirname "$0") && pwd -P)/$(basename "$0")
-else
-    SELF=$(readlink -f "$0")
-fi
+SELF=$(cd $(dirname "$0") && pwd -P)/$(basename "$0")
 SELF_PATH=$(dirname "$SELF")
 
 # define downloads & tmp file paths & default for installing skel files
