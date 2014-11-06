@@ -138,8 +138,8 @@ then
     echo "downloading vim plugins..."
 
     # download colorschemes directly
-    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.github.com/tpope/vim-vividchalk/master/colors/vividchalk.vim"
-    $DL_CMD "$DOWNLOADS/.vim/colors/sunburst.vim" "https://raw2.github.com/tangphillip/SunburstVIM/master/colors/sunburst.vim"
+    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.githubusercontent.com/tpope/vim-vividchalk/master/colors/vividchalk.vim"
+    $DL_CMD "$DOWNLOADS/.vim/colors/sunburst.vim" "https://raw.githubusercontent.com/tangphillip/SunburstVIM/master/colors/sunburst.vim"
 
     if which unzip &> /dev/null
     then
