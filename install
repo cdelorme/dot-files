@@ -7,8 +7,14 @@ then
 fi
 
 # get script info
-SELF=$(cd $(dirname "$0") && pwd -P)/$(basename "$0")
+SELF=$(cd $dirname "$0") && pwd -P)/$(basename "$0")
 SELF_PATH=$(dirname "$SELF")
+
+# attempt to improve for cases where execution has no valid path (eg over a network)
+if [ ! -d "$SELF_PATH" ]
+then
+    SELF_PATH="/tmp"
+fi
 
 # define downloads & tmp file paths & default for installing skel files
 DOWNLOADS="$SELF_PATH/downloads"
