@@ -300,6 +300,12 @@ then
     chmod 0700 "$DOWNLOADS/.ssh"
 fi
 
+# remove ssh config for windows
+if [[ $(uname) == MINGW* ]]
+then
+    rm -rf "$DOWNLOADS/.ssh/config"
+fi
+
 # install the files to home (if auto)
 if [ $AUTO_INSTALL ]
 then
