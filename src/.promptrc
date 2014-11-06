@@ -166,8 +166,8 @@ colorify ()
     if $ENHANCED_PROMPT
     then
 
-        # If Linux display milliseconds (OSX does not support %N `data`)
-        if [ $(uname) = "Darwin" ]
+        # If Linux display milliseconds (OSX does not support %N `data`, neither does Windows git-bash)
+        if [ $(uname) = "Darwin" ] || [[ $(uname) == MINGW* ]]
         then
             prompt_string="${c_blue}${0} ($(date +'%R:%S')) ${c_purple}$(whoami)${c_sgr0}@${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
         else
