@@ -72,13 +72,16 @@ then
 else
     alias ls='ls -ahF --color=auto'
 fi
+if [[ $(uname) != MINGW* ]]
+then
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
 alias ll="ls -l"
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
 
 # explicitly set XDG DATA DIRS
-if [ $(uname) != "Darwin" ]
+if [ $(uname) != "Darwin" ] && [[ $(uname) != MINGW* ]]
 then
     if [ -z "$XDG_DATA_DIRS" ]
     then
