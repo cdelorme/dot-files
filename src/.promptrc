@@ -2,8 +2,6 @@
 #$HOME/.promptrc
 
 # Author: Casey DeLorme
-# Created On: 12-30-2013
-# Updated On: 01-25-2014
 # Description: Entirely rewritten bash PS1 enhancer targeting git repositories, fully extendable
 # License: GPLv3+
 
@@ -30,6 +28,15 @@ then
     c_purple=`tput setaf 5`
     c_cyan=`tput setaf 6`
     c_sgr0=`tput sgr0`
+else
+    # for windows compatibility
+    c_bold="\033[1m"
+    c_red="\033[31m"
+    c_green="\033[32m"
+    c_blue="\033[34m"
+    c_purple="\033[35m"
+    c_cyan="\033[36m"
+    c_sgr0="\033[0m"
 fi
 
 # Define enhancers for easy future-external customization
@@ -167,9 +174,14 @@ colorify ()
     then
 
         # If Linux display milliseconds (OSX does not support %N `data`, neither does Windows git-bash)
-        if [ $(uname) = "Darwin" ] || [[ $(uname) == MINGW* ]]
+        # If Linux display milliseconds (OSX does not support %N `data`)
+        if [ $(uname) = "Darwin" ]
         then
             prompt_string="${c_blue}${0} ($(date +'%R:%S')) ${c_purple}$(whoami)${c_sgr0}@${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
+        elif [[ $(uname) == MINGW* ]]
+        then
+            # windows git-bash compatible PS1
+            prompt_string="${c_blue}($(date +'%R:%S')) ${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
         else
             prompt_string="${c_blue}${0} ($(date +'%R:%S.%3N')) ${c_purple}$(whoami)${c_sgr0}@${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
         fi
