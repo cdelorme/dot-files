@@ -70,7 +70,8 @@ then
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
-alias ll="ls -l"
+alias ll='ls -l'
+alias ..='cd ..'
 
 # explicitly set XDG DATA DIRS
 if [ $(uname) != "Darwin" ] && [[ $(uname) != MINGW* ]]
