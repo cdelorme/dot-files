@@ -12,5 +12,3 @@
     sa = stash apply
     l = !. ~/.githelpers && pretty_git_log
     pp = !git pull && git push
-[push]
-    default = simple
