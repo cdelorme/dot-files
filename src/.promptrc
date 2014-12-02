@@ -57,7 +57,7 @@ gitify ()
     then
 
         # Verify we are in a git repo
-        git_works=$(git branch 2>&1)
+        git_works=$(git branch 2>/dev/null)
 
         # If no error occurred assume we are inside a repo
         if [ $? -eq 0 ]
@@ -69,7 +69,7 @@ gitify ()
             # if branch name is (no branch) get commit hash instead
             if [ "${git_branch}" == "(no branch)" ]
             then
-                git_branch=$(git rev-parse --verify --short HEAD)
+                git_branch=$(git rev-parse --verify --short HEAD 2>/dev/null)
             fi
 
             if [ "$GIT_PROMPT_BRANCH_ONLY" = true ]
@@ -80,7 +80,7 @@ gitify ()
             else
 
                 # Acquire git status
-                git_stats=$(git status --porcelain --untracked-files=all)
+                git_stats=$(git status --porcelain --untracked-files=all 2>/dev/null)
 
                 # Get count of changes from git_stats
                 git_changes=$(echo "${git_stats}" | sed '/^\s*$/d' | wc -l)
