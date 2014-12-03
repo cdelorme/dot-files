@@ -50,5 +50,5 @@ fi
 # install files
 [ $agree = "y" ] && for f in ${files[*]}; do cp -R "${dlpath}/${f}" "${HOME}/${f}"; done
 
-# attempt to install files to /etc/skel
-[ -d "/etc/skel" ] && for f in ${files[*]}; do cp -R "${dlpath}/${f}" "/etc/skel/${f}"; done
+# if root, attempt to install files to /etc/skel
+[ $(id -u) -eq 0 ] && [ -d "/etc/skel" ] && for f in ${files[*]}; do cp -R "${dlpath}/${f}" "/etc/skel/${f}"; done
