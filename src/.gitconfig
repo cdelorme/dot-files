@@ -10,5 +10,5 @@
     c = commit
     st = stash
     sa = stash apply
-    l = !. ~/.githelpers && pretty_git_log
+    l = !. ~/.githelpers && vgl
     pp = !git pull && git push
