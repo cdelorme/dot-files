@@ -1,120 +1,52 @@
 
-# Dot Files Repo
+# dot-files
 
 These are my dot files.  There are many like them, but these are mine.
 
-My install script and related are licensed under GPLv3, they will forever remain free to edit and modify provided you grant the same courtesy to future generations.
-
-**This script no-longer overwrites existing dot-files unless you ask it to! (though a backup is still recommended)**
+The intention of these files are to enhance your terminal experience and productivity.
 
 
-## Features
+## features
 
-These dot files can be used to greatly enhance your terminal experience, and automate initial user configuration and setup.
+If you are looking for automation with extended features, see my [system-setup repository](https://www.github.com/cdelorme/system-setup).  These are plain files that can be copied into your home folder.
 
 Features include:
 
-- osx & linux compatibility (_and possibly bsd_)
-- enhanced prompt with colors to cleanly display more information
-- automatic detailed git information when in a git project, giving you an instant summary
-- togglable and extendable prompt features
-- autoloads ssh keys if able
-- fully configured vim /w common plugins:
-    - [ctrlp](https://github.com/elzr/vim-json)
-    - [json syntax support](https://github.com/kien/ctrlp.vim)
-    - golang go fmt on w/wq/x
-    - _simple_ tab completion
-- **optional** automatically pull `https://github.com/username.keys` to `~/.ssh/authorized_keys`
-- **optional** automatic ssh-keygen and push to github
-- **optional** automatic osx homebrew github token creation
+- linux, osx, and windows (git-bash) compatibility
+- installation script
+- vim customization
+- prompt & git enhancements
+
+The vim customizations include color scheme settings and autoloading of plugins, _but the installation of plugins and color schemes are to be handled separately._  No errors will (or should) occur from using the vimrc.
+
+Prompt enhancements include automated loading of ssh keys (if they exist, and from non-login shells), and color-coding with timestamps and appropriate prompt command spacing.
+
+The git enhancements include automated displaying of the current branch, and git repository status while inside a repository.
 
 
-## Dependencies
+## usage
 
-This script will attempt to use `curl` and fallback on `wget` as a download command to download individual files.  For plugins or entire missing packages it will attempt to use `git`, otherwise it will use the previously selected download command and require `unzip` to decompress the packages.
+The easiest way is to download or clone the repository and copy and paste the files in `src/` into `~/`.  Doing so will omit the `git-completion` file (which may not be necessary on all platforms)  Alternatively you can run `./install` to copy the files for you.
 
-So any combination of `curl` _or_ `wget` **and** `git` _or_ `unzip`.  **I suggest installing all of them anyways, and then working from there.**
+Alternatively you can install from remote with `curl` via:
 
+    bash <(curl -s "https://raw.githubusercontent.com/cdelorme/dot-files/master/install")
 
-## Installation
+Or using `wget`:
 
-My dot-files comes with an `install` bash script.  This script will look for local files, and download whatever is missing, then copy it into the current users `$HOME` path.  It will also attempt to copy the files into `/etc/skel`, if the path exists and privileges allow.
+    bash <(wget --no-check-certificate -qO- "https://raw.githubusercontent.com/cdelorme/dot-files/master/install")
 
-You can download just the install script and run it:
+_Unfortunately `wget` requires the additional parameter for https compatibility, making it more verbose._
 
-    wget "https://raw.github.com/cdelorme/dot-files/master/install"
-
-or:
-
-    curl -o "install" "https://raw.github.com/cdelorme/dot-files/master/install"
-
-then:
-
-    chmod +x install
-    ./install
-
-_Alternatively you can clone the repository and run `./install` inside it._
-
-This will create a `downloads/` folder with all of the files that you may then copy to your `$HOME/` folder manually.
+By default the installer will ask for confirmation, simply add `-q` after the closing parenthesis to automate silently.
 
 
-**The script now accepts proper arguments.  For a more detailed list use `./install -h`**.
+### dependencies
 
-To automatically copy the files to your `$HOME/` folder **overwriting any files already there**:
-
-    ./install -a
-
-To install dot-files into `/etc/skel` (for linux systems):
-
-    ./install --skel
-
-If you want to automatically pull your accounts github pub keys just add a github username:
-
-    ./install -u username -k
-
-To automate ssh keygen and osx homebrew token processing:
-
-    ./install -u username -p password
-
-_It will generate a key only if no default key already exists, and will not run if the user is root._
-
-If you want to specify a different key password than your github account (such as a user or system password):
-
-    ./install -u username -p password --ssl-password=secondpassword
+The script relies on either `curl` or `wget` to acquire remote contents.
 
 
-#### Installer Requirements
-
-- remote install, vim plugins, and colorscheme require either git, or unzip and curl or wget
-
-_Failed operations are spit into the relative logfile._
-
-**These dot files are now also compatible with Windows `git bash`!**
-
-
-## OS X
-
-You may consider [remapping capslock](http://c2.com/cgi/wiki?RemapCapsLock), since nobody really uses that key anymore.
-
-OS X has used "Darwin" as their [uname response](http://en.wikipedia.org/wiki/Uname) for many years now, so it is reliable.
-
-If you are using OSX with a default hostname, it'll be obsurdly long (eg. `Firstname Lastname's Macbook.local`).  yYou can fix that easily with `sudo scutil --set HostName newname.local`, or by going through `System Setting` to `Sharing` and changing the name from there.  _You will have to reboot or relogin for this change to take affect._
-
-The root user exists on osx, and its home dir is `/var/root`.  By default the root account on OSX uses the `/bin/sh` shell, to switch to bash you will first have to run:
-
-    sudo su
-    chsh -s /bin/bash root
-
-Then you may use the dot-files as the root account if necessary.
-
-
-## Planned Features
+## future plans
 
 - vim mapping control/command + v hotkey to trigger `:set paste` and `:set nopaste`
 - shared clipboard support between vim sessions
-
-
-## References
-
-- [remapping capslock](http://c2.com/cgi/wiki?RemapCapsLock)
-- [uname response](http://en.wikipedia.org/wiki/Uname)

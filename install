@@ -1,338 +1,54 @@
 #!/bin/bash
+# updated interactive install script
 
-# If clear exists, use it before we populate the screen with install messages
-if which clear &> /dev/null
+# files array (for handling which items get installed)
+local_files=(".gitconfig" ".githelpers" ".promptrc" ".tmux.conf" ".vimrc" ".bashrc" ".bash_logout")
+if [[ $(uname) != MINGW* ]]
 then
-    clear
+    local_files="${local_files[*]} .bash_profile .ssh/config"
 fi
 
-# get script info
-SELF=$(cd $(dirname "$0") && pwd -P)/$(basename "$0")
-SELF_PATH=$(dirname "$SELF")
-
-# attempt to improve for cases where execution has no valid path (eg over a network)
-if [ ! -d "$SELF_PATH" ]
-then
-    SELF_PATH="/tmp"
-fi
-
-# define downloads & tmp file paths & default for installing skel files
-DOWNLOADS="$SELF_PATH/downloads"
-TMP_FILES="$DOWNLOADS/tmp"
-INSTALL_SKEL=false
-AUTO_INSTALL=false
-GITHUB_PUBLIC_KEYS=false
-
-# parse arguments
-while [ $# -gt 0 ]
-do
-    case "$1" in
-            -h|--help)
-                    echo "$0 - install dot-files for convenience"
-                    echo " "
-                    echo "$0 [options]"
-                    echo " "
-                    echo "options:"
-                    echo "-h, --help                 show brief help"
-                    echo "-s, --skel                 install files to skel (requires root privileges)"
-                    echo "-a, --auto                 automatically overwrite existing $HOME/ dot-files"
-                    echo "-k, --keys                 download keys from github (dependent on github username)"
-                    echo "-u, --username=USERNAME    github username/account"
-                    echo "-p, --password=PASSWORD    github password"
-                    echo "--ssl-password=PASSWORD    local password to generate ssl with"
-                    exit 0
-                    ;;
-            -s|--skel)
-                shift
-                INSTALL_SKEL=true
-                ;;
-            -a|--auto)
-                shift
-                AUTO_INSTALL=true
-                ;;
-            -k|--keys)
-                shift
-                GITHUB_PUBLIC_KEYS=true
-                ;;
-            -u)
-                shift
-                if [ $# -gt 0 ]
-                then
-                    GITHUB_USERNAME=$1
-                fi
-                shift
-                ;;
-            --username*)
-                GITHUB_USERNAME=`echo $1 | sed -e 's/^[^=]*=//g'`
-                shift
-                ;;
-            -p)
-                shift
-                if [ $# -gt 0 ]
-                then
-                    GITHUB_PASSWORD=$1
-                fi
-                shift
-                ;;
-            --password*)
-                GITHUB_PASSWORD=`echo $1 | sed -e 's/^[^=]*=//g'`
-                shift
-                ;;
-            --ssl-password*)
-                SSL_PASSWORD=`echo $1 | sed -e 's/^[^=]*=//g'`
-                shift
-                ;;
-            *)
-                break
-                ;;
-    esac
-done
-
-# Give the user 5 seconds to cancel
-echo "Preparing to install, cancel within 5 seconds via ctrl+c, or wait until the script finishes."
-sleep 5
-
-# redirect output to a logfile for the duration of this script
-if ! exec &> >(tee "$SELF.log")
-then
-    echo "System does not support process substitution; Script output will not be logged."
-fi
-
-# check for wget or curl to download all files
+# determine download command
 if which curl &> /dev/null
 then
-    DL_CMD="curl -L -o"
+    dlcmd="curl -L -o"
 elif which wget &> /dev/null
 then
-    DL_CMD="wget -O"
-    echo "curl package recommended..."
+    dlcmd="wget -O"
 fi
 
-# create dependent folders
-mkdir -p "$DOWNLOADS/.vim/undo" "$DOWNLOADS/.vim/colors" "$TMP_FILES"
+# prepare a temp directory
+dlpath="/tmp/dot-files"
+echo "creating installation directory $dlpath"
+mkdir -p "$dlpath/.ssh"
 
-# if go is installed, grab the go vim plugin for it
-if which go &> /dev/null
-then
-    cp -R "$(go env GOROOT)/misc/vim/" "$DOWNLOADS/.vim"
-fi
-
-# check for git
-if which git &> /dev/null
-then
-
-    # echo status
-    echo "cloning vim plugin repositories..."
-
-    # check for src/
-    if [ ! -d "$SELF_PATH/src/" ]
-    then
-
-        # clone our own repo to grab the files
-        git clone "https://github.com/cdelorme/dot-files" "$TMP_FILES/dot-files"
-    fi
-
-    # clone all repositories
-    git clone "https://github.com/tpope/vim-vividchalk" "$TMP_FILES/vividchalk"
-    git clone "https://github.com/tangphillip/SunburstVIM.git" "$TMP_FILES/sunburst"
-    git clone "https://github.com/elzr/vim-json" "$TMP_FILES/json"
-    git clone "https://github.com/kien/ctrlp.vim" "$TMP_FILES/ctrlp"
-elif [ -n "$DL_CMD" ]
-then
-
-    # echo status
-    echo "downloading vim plugins..."
-
-    # download colorschemes directly
-    $DL_CMD "$DOWNLOADS/.vim/colors/vividchalk.vim" "https://raw.githubusercontent.com/tpope/vim-vividchalk/master/colors/vividchalk.vim"
-    $DL_CMD "$DOWNLOADS/.vim/colors/sunburst.vim" "https://raw.githubusercontent.com/tangphillip/SunburstVIM/master/colors/sunburst.vim"
-
-    if which unzip &> /dev/null
-    then
-
-        # download the zipped packages
-        $DL_CMD "$TMP_FILES/ctrlp.zip" "https://github.com/kien/ctrlp.vim/archive/master.zip"
-        $DL_CMD "$TMP_FILES/ctrlp.zip" "https://github.com/elzr/vim-json/archive/master.zip"
-        $DL_CMD "$TMP_FILES/emmet.zip" "https://github.com/tangphillip/SunburstVIM/archive/master.zip"
-
-        # download our own repo if no src/
-        if [ ! -d "$SELF_PATH/src/" ]
-        then
-            $DL_CMD "$TMP_FILES/dot-files.zip" "https://github.com/cdelorme/dot-files/archive/master.zip"
-        fi
-
-        # user feedback
-        echo "decompressing packages..."
-
-        # decompress packages and delete the zips
-        for ZIP in "$TMP_FILES/"*.zip
-        do
-            unzip -q -o -d "$TMP_FILES" "$ZIP"
-            rm -rf $ZIP
-        done
-    else
-        echo "unzip required to install compressed contents..."
-    fi
-fi
-
-# iterate all files in $TMP_FILES
-for TMP_PATH in $TMP_FILES/*
+# copy or download files to temp directory
+for f in ${local_files[*]}
 do
-
-    # Get a count of items
-    CONTENTS=($TMP_PATH/*)
-
-    # if not git, and only one item append to TMP_PATH to dig deeper
-    if [ ! -d $TMP_PATH/.git ] && [ ${#CONTENTS[*]} -eq 1 ] && [ -d "$CONTENTS" ]
-    then
-        TMP_PATH="$TMP_PATH/$CONTENTS"
-    fi
-
-    # look for src directory
-    if [ -d "$TMP_PATH/src" ]
-    then
-
-        # copy contents to downloads
-        shopt -s dotglob
-        cp -R "$TMP_PATH/src/"* "$DOWNLOADS"
-        shopt -u dotglob
-    else
-
-        # iterate the contents
-        for TMP_DIR in "$TMP_PATH/"*
-        do
-
-            # delete anything that is not a directory (readmes etc)
-            if [ ! -d "$TMP_DIR" ]
-            then
-                rm -rf "$TMP_DIR"
-            fi
-        done
-
-        # merge directories recursively with $DOWNLOADS/.vim/
-        cp -Rf "$TMP_PATH/"* "$DOWNLOADS/.vim/"
-    fi
+    [ -f "src/${f}" ] && cp -R "src/${f}" "${dlpath}/${f}" || $dlcmd "${dlpath}/${f}" "https://raw.githubusercontent.com/cdelorme/dot-files/master/src/${f}"
 done
 
-# remove TMP_FILES path
-rm -rf $TMP_FILES
+# download ~/.git-completion
+$dlcmd "$dlpath/.git-completion" "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash"
 
-# check for manual downloads (easier this way)
-if [ -n "$DL_CMD" ]
+# identify top-level files
+files=$($(which ls) -1A "$dlpath/")
+
+# silent install?
+if [ "$1" == "-q" ]
 then
-    $DL_CMD "$DOWNLOADS/.git-completion" "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash"
-    $DL_CMD "$DOWNLOADS/.githelpers" "https://raw.githubusercontent.com/garybernhardt/dotfiles/master/.githelpers"
+    agree="y"
+else
+    # notify and confirm
+    echo "files have been downloaded to $dlpath"
+    echo "installation will replace the following files:"
+    echo "$files"
+    echo -n "do you wish to continue? (y|n)  "
+    read agree
 fi
 
-# if /src exists copy it to downloads else begin downloading the files from github
-if [ -d "$SELF_PATH/src/" ]
-then
-    shopt -s dotglob
-    cp -R "$SELF_PATH/src/"* "$DOWNLOADS"
-    shopt -u dotglob
-fi
+# install files
+[ $agree = "y" ] && for f in ${files[*]}; do cp -R "${dlpath}/${f}" "${HOME}/${f}"; done
 
-if [ -d "$DOWNLOADS/.ssh" ]
-then
-
-    # check if github_username is set
-    if [ -n "$DL_CMD" ] && [ -n "$GITHUB_USERNAME" ]
-    then
-
-        # check if github password was supplied (and not root user)
-        if [ -n "$GITHUB_PASSWORD" ] && [ $(id -u) -ne 0 ]
-        then
-
-            # does a key already exist
-            if [ ! -f "$HOME/.ssh/id_rsa" ]
-            then
-
-                # if ssl password was supplied use it, else use github password for key
-                if [ -z "$SSL_PASSWORD" ]
-                then
-                    SSL_PASSWORD="$GITHUB_PASSWORD"
-                fi
-
-                # generate key
-                ssh-keygen -q -b 4096 -t rsa -N "$SSL_PASSWORD" -f "$DOWNLOADS/.ssh/id_rsa"
-
-                # add public key to trusted list on github
-                HOST=$(hostname -s)
-                DATE=$(date '+%Y/%m/%d')
-
-                # attempt to push the key to github
-                curl -i -u "${GITHUB_USERNAME}:${GITHUB_PASSWORD}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"title\":\"${HOST} (${DATE})\",\"key\":\"$(cat $DOWNLOADS/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys
-            fi
-
-            # if darwin prep homebrew api key and to append to .bashrc
-            if [ $(uname) = "Darwin" ]
-            then
-
-                # Request keys from github
-                keys=$(curl -s -i -u "${GITHUB_USERNAME}:${GITHUB_PASSWORD}" -H "Content-Type: application/json" -H "Accept: application/json" -X GET https://api.github.com/authorizations)
-                if echo $keys | grep "homebrew" &> /dev/null
-                then
-                    token=$(echo "${keys#*homebrew}" | grep token | head -n1 | tr -d '":,' | awk '{print $2}')
-                else
-                    keys=$(curl -i -u "${GITHUB_USERNAME}:${GITHUB_PASSWORD}" -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d "{\"scopes\":[\"gist\",\"repo\",\"user\"],\"note\":\"homebrew\"}" https://api.github.com/authorizations)
-                    token=$(echo "$keys" | grep token | head -n1 | tr -d '":,' | awk '{print $2}')
-                fi
-
-                if [ -n "$token" ]
-                then
-
-                    # push token into .bashrc
-                    echo -ne "\n# homebrew github token (remove rate-limiting)\nexport HOMEBREW_GITHUB_API_TOKEN=${token}" >> "$DOWNLOADS/.bashrc"
-                fi
-            fi
-        fi
-
-        if [ "$GITHUB_PUBLIC_KEYS" = true ]
-        then
-            $DL_CMD "$DOWNLOADS/.ssh/authorized_keys" "https://github.com/${GITHUB_USERNAME}.keys"
-
-            # append existing authorized_keys to new one (just in case)
-            if [ -f "$HOME/.ssh/authorized_keys" ] && [ "$AUTO_INSTALL" = true ]
-            then
-                cat "$HOME/.ssh/authorized_keys" >> "$DOWNLOADS/.ssh/authorized_keys"
-                rm "$DOWNLOADS/.ssh/authorized_keys"
-            fi
-        fi
-    fi
-
-    # set 0600 on the contents for ssh "strict-mode" compatibility
-    chmod 0600 "$DOWNLOADS/.ssh/"*
-
-    # set 0700 on $HOME/.ssh so we can still access its contents
-    chmod 0700 "$DOWNLOADS/.ssh"
-fi
-
-# remove ssh config & bash_profile for windows
-if [[ $(uname) == MINGW* ]]
-then
-    rm -rf "$DOWNLOADS/.ssh/config"
-    rm -rf "$DOWNLOADS/.bash_profile"
-fi
-
-# install the files to home (if auto)
-if [ "$AUTO_INSTALL" = true ]
-then
-
-    # echo Status
-    echo "installing dot files..."
-
-    shopt -s dotglob
-    cp -Rf "$DOWNLOADS/"* "$HOME"
-    shopt -u dotglob
-fi
-
-# if /etc/skel exists, user is root, and flag was set then try to install skel
-if [ "$INSTALL_SKEL" = true ] && [ -d "/etc/skel" ] && [ $(id -u) -eq 0 ]
-then
-    shopt -s dotglob
-    cp -Rf "$DOWNLOADS/"* "/etc/skel"
-    shopt -u dotglob
-fi
-
-# final status message
-echo "dot files are installed."
+# attempt to install files to /etc/skel
+[ -d "/etc/skel" ] && for f in ${files[*]}; do cp -R "${dlpath}/${f}" "/etc/skel/${f}"; done
