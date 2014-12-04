@@ -8,7 +8,7 @@
     a = add
     s = status -suall
     c = commit
-    st = stash
+    st = stash -u
     sa = stash apply
     l = !. ~/.githelpers && vgl
     pp = !git pull && git push
