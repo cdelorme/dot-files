@@ -40,6 +40,8 @@ _Unfortunately `wget` requires the additional parameter for https compatibility,
 
 By default the installer will ask for confirmation, simply add `-q` after the closing parenthesis to automate silently.
 
+**For windows git-bash, which does not support subshells (`<()`) you will have to download the script first with curl/wget, then execute it and remove the script afterwards.**
+
 
 ### dependencies
 
