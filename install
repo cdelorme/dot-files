@@ -1,13 +1,6 @@
 #!/bin/bash
 # updated interactive install script
 
-# files array (for handling which items get installed)
-local_files=(".gitconfig" ".githelpers" ".promptrc" ".tmux.conf" ".vimrc" ".bashrc" ".bash_logout")
-if [[ $(uname) != MINGW* ]]
-then
-    local_files="${local_files[*]} .bash_profile .ssh/config"
-fi
-
 # determine download command
 if which curl &> /dev/null
 then
@@ -19,11 +12,12 @@ fi
 
 # prepare a temp directory
 dlpath="/tmp/dot-files"
-echo "creating installation directory $dlpath"
+echo "downloading dot-files to temporary path: ${dlpath}"
 mkdir -p "$dlpath/.ssh"
 
-# copy or download files to temp directory
-for f in ${local_files[*]}
+# download dot-files explicitly
+dotfiles=(".gitconfig" ".githelpers" ".promptrc" ".tmux.conf" ".vimrc" ".bashrc" ".bash_logout" ".bash_profile" ".ssh/config")
+for f in ${dotfiles[*]}
 do
     [ -f "src/${f}" ] && cp -R "src/${f}" "${dlpath}/${f}" || $dlcmd "${dlpath}/${f}" "https://raw.githubusercontent.com/cdelorme/dot-files/master/src/${f}"
 done
@@ -31,24 +25,29 @@ done
 # download ~/.git-completion
 $dlcmd "$dlpath/.git-completion" "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash"
 
-# identify top-level files
-files=$($(which ls) -1A "$dlpath/")
+# windows-condition
+if [ $(uname) != "Linux" ] && [ $(uname) != "Darwin" ]
+then
+    rm "${dlpath}/.bash_profile" "${dlpath}/.ssh/config"
+fi
 
-# silent install?
+# silent install or request confirmation
 if [ "$1" == "-q" ]
 then
     agree="y"
 else
-    # notify and confirm
-    echo "files have been downloaded to $dlpath"
-    echo "installation will replace the following files:"
-    echo "$files"
-    echo -n "do you wish to continue? (y|n)  "
-    read agree
+    while [ "$agree" != "y" ] && [ "$agree" != "n" ]
+    do
+        echo -n "are you sure you want to install dot-files? (y|n) "
+        read agree
+    done
 fi
 
-# install files
-[ $agree = "y" ] && for f in ${files[*]}; do cp -R "${dlpath}/${f}" "${HOME}/${f}"; done
+# acquire list of files to install
+dfiles=$($(which ls) -1A "$dlpath/")
+
+# install from temporary directory to home path
+[ "$agree" = "y" ] && for f in ${dfiles[*]}; do cp -R "${dlpath}/${f}" "${HOME}/${f}"; done
 
 # if root, attempt to install files to /etc/skel
-[ $(id -u) -eq 0 ] && [ -d "/etc/skel" ] && for f in ${files[*]}; do cp -R "${dlpath}/${f}" "/etc/skel/${f}"; done
+[ "$agree" = "y" ] && [ $(id -u) -eq 0 ] && [ -d "/etc/skel" ] && for f in ${dfiles[*]}; do cp -R "${dlpath}/${f}" "/etc/skel/${f}"; done
