@@ -13,7 +13,7 @@ fi
 # prepare a temp directory
 dlpath="/tmp/dot-files"
 echo "downloading dot-files to temporary path: ${dlpath}"
-mkdir -p "$dlpath/.ssh" "$dlpath/.vim/doc"
+mkdir -p "$dlpath/.ssh" "$dlpath/.vim/doc" "$dlpath/.vim/undo"
 
 # download dot-files explicitly
 dotfiles=(".gitconfig" ".githelpers" ".promptrc" ".tmux.conf" ".vimrc" ".bashrc" ".bash_logout" ".bash_profile" ".ssh/config")
