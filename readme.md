@@ -42,6 +42,10 @@ By default the installer will ask for confirmation, simply add `-q` after the cl
 
 **For windows git-bash, which does not support subshells (`<()`) you will have to download the script first with curl/wget, then execute it and remove the script afterwards.**
 
+You can do the silent install from windows remotely using a pipe and appropriate bash operators:
+
+    curl "https://raw.githubusercontent.com/cdelorme/dot-files/master/install" | bash -s -- -q
+
 
 ### dependencies
 
