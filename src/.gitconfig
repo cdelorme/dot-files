@@ -4,8 +4,6 @@
     autocorrect = 1
 [color]
     ui = true
-[push]
-    default = simple
 [alias]
     a = add
     s = status -suall
