@@ -96,7 +96,10 @@ then
         mkdir -p "${HOME}/.go/"{src,pkg} &> /dev/null
     fi
     export GOPATH="${HOME}/.go"
-    ln -sf "${HOME}/.bin" "${GOPATH}/bin"
+    if [ -d "${GOPATH}/bin" ]
+    then
+        ln -nsf "../.bin" "${GOPATH}/bin"
+    fi
 fi
 
 # load prompt addons
