@@ -117,6 +117,12 @@ export ENHANCED_PROMPT=true
 export GIT_PROMPT_ON=true
 export GIT_PROMPT_DETAILED=true
 
+# if aws is loaded, setup auto-completion
+if which aws &>/dev/null
+then
+    complete -C aws_completer aws
+fi
+
 # load ssh keys on first-run (will prompt for passwords)
 ssh-add -l &> /dev/null
 sshout=$?
