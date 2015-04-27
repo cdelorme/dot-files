@@ -74,9 +74,9 @@ augroup END
 " tab autocompletion
 function! Tab_Or_Complete()
     if col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
-        return "\<C-N>"
+        return "\<c-n>"
     else
-        return "\<Tab>"
+        return "\<tab>"
     endif
 endfunction
 :inoremap <tab> <c-r>=Tab_Or_Complete()<cr>
