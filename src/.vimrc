@@ -14,7 +14,7 @@ set foldmethod=syntax foldlevelstart=20
 set nobackup noswapfile
 :silent! set undodir=$HOME/.vim/undo undolevels=1000 undoreload=10000 undofile
 
-" select color scheme
+" set color scheme
 set background=dark
 :silent! colorscheme vividchalk
 
@@ -25,19 +25,19 @@ let mapleader=","
 nnoremap <leader><space> :noh<cr>
 
 " remap inconvenient keys
-inoremap <F1> <Esc>
-nnoremap <F1> <Esc>
-vnoremap <F1> <Esc>
+inoremap <f1> <esc>
+nnoremap <f1> <esc>
+vnoremap <f1> <esc>
 
 " shortcut ; to : for less keys
 nnoremap ; :
 
 " toggle paste mode with F2
-set pastetoggle=<F2>
+set pastetoggle=<leader>p
 
 " quickly edit/reload the vimrc file (,ev or ,sv)
-nmap <silent> <leader>ev :e $MYVIMRC<CR>
-nmap <silent> <leader>sv :so $MYVIMRC<CR>
+nmap <silent> <leader>ev :e $MYVIMRC<cr>
+nmap <silent> <leader>sv :so $MYVIMRC<cr>
 
 " disable noise makers
 set noeb vb t_vb=
@@ -49,19 +49,27 @@ set noeb vb t_vb=
 filetype plugin on
 set foldmethod=syntax
 
-" additional file recognition
-au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}   set filetype=markdown
-
-" missing syntax recognition
+" define highlight for bad formatting
 highlight BadWhitespace ctermbg=red guibg=red
-au BufRead,BufNewFile *.py match BadWhitespace /*\t\*/
-au BufRead,BufNewFile *.py match BadWhitespace /\s\+$/
 
-" remove trailing whitespace automatically on save
-au BufWritePre * :%s/\s\+$//e
+" define au-group to prevent stacking execution
+augroup cureall
+	" clear group
+	au!
 
-" remove windows carriage returns automatically
-au BufWritePre * :%s/\r//e
+	" additional file recognition
+	au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}   set filetype=markdown
+
+	" missing syntax recognition
+	au BufRead,BufNewFile *.py match BadWhitespace /*\t\*/
+	au BufRead,BufNewFile *.py match BadWhitespace /\s\+$/
+
+	" remove trailing whitespace automatically on save
+	au BufWritePre * :%s/\s\+$//e
+
+	" remove windows carriage returns automatically
+	au BufWritePre * :%s/\r//e
+augroup END
 
 " tab autocompletion
 function! Tab_Or_Complete()
@@ -71,7 +79,7 @@ function! Tab_Or_Complete()
         return "\<Tab>"
     endif
 endfunction
-:inoremap <Tab> <C-R>=Tab_Or_Complete()<CR>
+:inoremap <tab> <c-r>=Tab_Or_Complete()<cr>
 :set dictionary="/usr/share/dict/words"
 
 " load plugins
