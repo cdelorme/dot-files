@@ -2,7 +2,7 @@
 " default state
 set nocompatible
 set modelines=0 enc=utf-8 ffs=unix
-set ts=4 sw=4 sts=4 expandtab shiftround
+set ts=4 sw=4 sts=4 shiftround
 set autoindent smartindent
 set showmode showcmd laststatus=2
 set hidden nowrap number ruler cursorline
@@ -14,21 +14,8 @@ set foldmethod=syntax foldlevelstart=20
 set nobackup noswapfile
 :silent! set undodir=$HOME/.vim/undo undolevels=1000 undoreload=10000 undofile
 
-" these options can improve visibility of newlines and tabs,
-"  at the cost of making it difficult to copy externally
-"set list listchars=tab:▸\ ,eol:¬
-
-" if you want a more pronounced divider for the 80
-"  character width entry space enable this
-"set formatoptions=qrn1 colorcolumn=85
-
-" mouse operation makes it harder to
-"  copy and paste outside of vim
-"set mouse=a
-
 " select color scheme
 set background=dark
-":silent! colorscheme sunburst
 :silent! colorscheme vividchalk
 
 " set leader-key to comma
@@ -70,9 +57,6 @@ highlight BadWhitespace ctermbg=red guibg=red
 au BufRead,BufNewFile *.py match BadWhitespace /*\t\*/
 au BufRead,BufNewFile *.py match BadWhitespace /\s\+$/
 
-" autoconvert tabs to spaces (disabled by default for various reasons)
-" au BufWritePre * :%s/\t/    /e
-
 " remove trailing whitespace automatically on save
 au BufWritePre * :%s/\s\+$//e
 
@@ -88,7 +72,7 @@ function! Tab_Or_Complete()
     endif
 endfunction
 :inoremap <Tab> <C-R>=Tab_Or_Complete()<CR>
-:set dictionary="/usr/dict/words"
+:set dictionary="/usr/share/dict/words"
 
 " load plugins
 :silent! set runtimepath^=$HOME/.vim/bundle/ctrlp.vim
