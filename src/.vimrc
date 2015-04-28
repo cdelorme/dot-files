@@ -73,11 +73,11 @@ augroup END
 
 " tab autocompletion
 function! Tab_Or_Complete()
-    if col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
-        return "\<c-n>"
-    else
-        return "\<tab>"
-    endif
+	if col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
+		return "\<c-n>"
+	else
+		return "\<tab>"
+	endif
 endfunction
 :inoremap <tab> <c-r>=Tab_Or_Complete()<cr>
 :set dictionary="/usr/share/dict/words"
@@ -85,3 +85,4 @@ endfunction
 " load plugins
 :silent! set runtimepath^=$HOME/.vim/bundle/ctrlp.vim
 :silent! :helptags $HOME/.vim/doc
+
