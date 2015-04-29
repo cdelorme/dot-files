@@ -16,7 +16,7 @@ echo "downloading dot-files to temporary path: ${dlpath}"
 mkdir -p "$dlpath/.ssh" "$dlpath/.vim/doc" "$dlpath/.vim/undo"
 
 # download dot-files explicitly
-dotfiles=(".gitconfig" ".githelpers" ".promptrc" ".tmux.conf" ".vimrc" ".bashrc" ".bash_logout" ".bash_profile" ".ssh/config")
+dotfiles=(".gitconfig" ".githelpers" ".gitignore" ".promptrc" ".tmux.conf" ".vimrc" ".bashrc" ".bash_logout" ".bash_profile" ".ssh/config")
 for f in ${dotfiles[*]}
 do
     [ -f "src/${f}" ] && cp -R "src/${f}" "${dlpath}/${f}" || $dlcmd "${dlpath}/${f}" "https://raw.githubusercontent.com/cdelorme/dot-files/master/src/${f}"
