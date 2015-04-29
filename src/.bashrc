@@ -96,7 +96,7 @@ then
         mkdir -p "${HOME}/.go/"{src,pkg} &> /dev/null
     fi
     export GOPATH="${HOME}/.go"
-    if [ -d "${GOPATH}/bin" ]
+    if [ ! -d "${GOPATH}/bin" ]
     then
         ln -nsf "../.bin" "${GOPATH}/bin"
     fi
