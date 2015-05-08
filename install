@@ -1,35 +1,36 @@
 #!/bin/bash
-# updated interactive install script
 
-# determine download command
-if which curl &> /dev/null
+# check local, for git, then fallback to direct downloads
+if [ -d src/ ]
 then
-    dlcmd="curl -L -o"
-elif which wget &> /dev/null
+    mkdir -p /tmp/dot-files/src && find src -mindepth 1 -maxdepth 1 -exec cp -R {} /tmp/dot-files/src/ \;
+elif which git &>/dev/null
 then
-    dlcmd="wget -O"
+    git clone https://github.com/cdelorme/dot-files /tmp/dot-files
+else
+    dotfiles=(".bash_logout" ".bash_profile" ".bashrc" ".gitconfig" ".githelpers" ".gitignore" ".promptrc" ".ssh/config" ".tmux.conf" ".vimrc")
+
+    # prepare temporary directory (and ssh folder)
+    mkdir -p /tmp/dot-files/src/.ssh
+
+    # determine available download command
+    if which curl &> /dev/null
+    then
+        dlcmd="curl -Lo"
+    elif which wget &> /dev/null
+    then
+        dlcmd="wget --no-check-certificate -O"
+    fi
+
+    # download each explicitly
+    for f in ${dotfiles[*]}
+    do
+        $dlcmd "/tmp/dot-files/src/${f}" "https://raw.githubusercontent.com/cdelorme/dot-files/master/src/${f}"
+    done
 fi
 
-# prepare a temp directory
-dlpath="/tmp/dot-files"
-echo "downloading dot-files to temporary path: ${dlpath}"
-mkdir -p "$dlpath/.ssh" "$dlpath/.vim/doc" "$dlpath/.vim/undo"
-
-# download dot-files explicitly
-dotfiles=(".gitconfig" ".githelpers" ".gitignore" ".promptrc" ".tmux.conf" ".vimrc" ".bashrc" ".bash_logout" ".bash_profile" ".ssh/config")
-for f in ${dotfiles[*]}
-do
-    [ -f "src/${f}" ] && cp -R "src/${f}" "${dlpath}/${f}" || $dlcmd "${dlpath}/${f}" "https://raw.githubusercontent.com/cdelorme/dot-files/master/src/${f}"
-done
-
-# download ~/.git-completion
-$dlcmd "$dlpath/.git-completion" "https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash"
-
-# windows-condition
-if [ $(uname) != "Linux" ] && [ $(uname) != "Darwin" ]
-then
-    rm "${dlpath}/.bash_profile" "${dlpath}/.ssh/config"
-fi
+# prepare vim directories
+mkdir -p /tmp/dot-files/src/.vim/{undo,doc}
 
 # silent install or request confirmation
 if [ "$1" == "-q" ]
@@ -38,16 +39,15 @@ then
 else
     while [ "$agree" != "y" ] && [ "$agree" != "n" ]
     do
-        echo -n "are you sure you want to install dot-files? (y|n) "
-        read agree
+        read -p "are you sure you want to install dot-files? (y|n): " agree
     done
 fi
 
-# acquire list of files to install
-dfiles=$($(which ls) -1A "$dlpath/")
+# install the files
+if [ "$agree" = "y" ]
+then
+    find /tmp/dot-files/src -maxdepth 1 -exec cp -R {} ~/ \;
+    [ $(id -u) -eq 0 ] && [ -d /etc/skel ] && find /tmp/dot-files/src -maxdepth 1 -exec cp -R {} /etc/skel/ \;
+fi
 
-# install from temporary directory to home path
-[ "$agree" = "y" ] && for f in ${dfiles[*]}; do cp -R "${dlpath}/${f}" "${HOME}/${f}"; done
-
-# if root, attempt to install files to /etc/skel
-[ "$agree" = "y" ] && [ $(id -u) -eq 0 ] && [ -d "/etc/skel" ] && for f in ${dfiles[*]}; do cp -R "${dlpath}/${f}" "/etc/skel/${f}"; done
+exit 0
