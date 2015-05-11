@@ -24,9 +24,6 @@ then
 fi
 export PATH="$HOME/.bin:$PATH"
 
-# shortened time format output
-export TIMEFORMAT="r: %R, u: %U, s: %S"
-
 # set history file
 export HISTFILE="$HOME/.bash_history"
 
@@ -81,11 +78,6 @@ then
         XDG_DATA_DIRS="/usr/share:/usr/local/share"
     fi
     XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.local/share"
-fi
-
-# if sublime text is installed locally, makde sure a local subl exists
-if [ $(uname) != "Darwin" ] && [ ! -f "$HOME/.bin/subl" ] && [ -f "$HOME/applications/sublime_text/sublime_text" ];then
-    ln -s "$HOME/applications/sublime_text/sublime_text" "$HOME/.bin/subl"
 fi
 
 # check for go to add GOPATH
