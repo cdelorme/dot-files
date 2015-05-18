@@ -46,7 +46,7 @@ fi
 # install the files
 if [ "$agree" = "y" ]
 then
-    find /tmp/dot-files/src -maxdepth 1 -exec cp -R {} ~/ \;
+    find /tmp/dot-files/src -mindepth 1 -maxdepth 1 -exec cp -R {} ~/ \;
     [ $(id -u) -eq 0 ] && [ -d /etc/skel ] && find /tmp/dot-files/src -maxdepth 1 -exec cp -R {} /etc/skel/ \;
 fi
 
