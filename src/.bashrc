@@ -55,10 +55,10 @@ export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.local/share"
 # aliases, color, and optimizations
 if [ $(uname) = "Darwin" ]
 then
-    alias ls='ls -FGa'
+    alias ls='ls -FGA'
     chflags nohidden "$HOME/Library"
 else
-    alias ls='ls -ahF --color=auto'
+    alias ls='ls -hFA --color=auto'
 fi
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
