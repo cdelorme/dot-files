@@ -65,6 +65,7 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 alias ll='ls -l'
 alias ..='cd ..'
+alias sshfs='sshfs -o cache=yes,compression=yes,large_read,kernel_cache'
 
 # load ssh keys on first-run (will prompt for passwords)
 ssh-add -l &>/dev/null
