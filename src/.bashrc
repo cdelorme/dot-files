@@ -33,13 +33,13 @@ export GIT_PROMPT_DETAILED=true
 # enable bash-completion if it exists
 if [ -f /etc/bash_completion ]
 then
-    . /etc/bash_completion
+	. /etc/bash_completion
 elif [ -f /usr/share/bash-completion/bash_completion ]
 then
-    . /usr/share/bash-completion/bash_completion
+	. /usr/share/bash-completion/bash_completion
 elif which brew &>/dev/null && [ -f $(brew --prefix)/etc/bash_completion ]
 then
-    . $(brew --prefix)/etc/bash_completion
+	. $(brew --prefix)/etc/bash_completion
 fi
 
 # load grunt global bash-completion
@@ -55,10 +55,10 @@ export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.local/share"
 # aliases, color, and optimizations
 if [ $(uname) = "Darwin" ]
 then
-    alias ls='ls -FGA'
-    chflags nohidden "$HOME/Library"
+	alias ls='ls -FGA'
+	chflags nohidden "$HOME/Library"
 else
-    alias ls='ls -hFA --color=auto'
+	alias ls='ls -hFA --color=auto'
 	alias lue='find . -type f | perl -ne "print $1 if m/\.([^.\/]+)$/" | sort -u'
 fi
 alias grep='grep --color=auto'
@@ -73,9 +73,9 @@ ssh-add -l &>/dev/null
 sshout=$?
 if [ $sshout -eq 2 ]
 then
-    eval $(ssh-agent) &>/dev/null
-    ssh-add
+	eval $(ssh-agent) &>/dev/null
+	ssh-add
 elif [ $sshout -eq 1 ]
 then
-    ssh-add
+	ssh-add
 fi

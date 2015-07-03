@@ -1,17 +1,17 @@
 [core]
-    editor = vim
-    excludesfile = ~/.gitignore
+	editor = vim
+	excludesfile = ~/.gitignore
 [help]
-    autocorrect = 1
+	autocorrect = 1
 [color]
-    ui = true
+	ui = true
 [push]
-    default = simple
+	default = simple
 [alias]
-    a = add
-    s = status -suall
-    c = commit
-    st = stash -u
-    sa = stash apply
-    l = !. ~/.githelpers && vgl
-    pp = !git pull && git push
+	a = add
+	s = status -suall
+	c = commit
+	st = stash -u
+	sa = stash apply
+	l = !. ~/.githelpers && vgl
+	pp = !git pull && git push

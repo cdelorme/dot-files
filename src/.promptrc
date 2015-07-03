@@ -21,22 +21,22 @@
 # Define color functions for enhanced terminal aesthetics
 if which tput &> /dev/null
 then
-    c_bold=`tput bold`
-    c_red=`tput setaf 1`
-    c_green=`tput setaf 2`
-    c_blue=`tput setaf 4`
-    c_purple=`tput setaf 5`
-    c_cyan=`tput setaf 6`
-    c_sgr0=`tput sgr0`
+	c_bold=`tput bold`
+	c_red=`tput setaf 1`
+	c_green=`tput setaf 2`
+	c_blue=`tput setaf 4`
+	c_purple=`tput setaf 5`
+	c_cyan=`tput setaf 6`
+	c_sgr0=`tput sgr0`
 else
-    # for windows compatibility
-    c_bold="\033[1m"
-    c_red="\033[31m"
-    c_green="\033[32m"
-    c_blue="\033[34m"
-    c_purple="\033[35m"
-    c_cyan="\033[36m"
-    c_sgr0="\033[0m"
+	# for windows compatibility
+	c_bold="\033[1m"
+	c_red="\033[31m"
+	c_green="\033[32m"
+	c_blue="\033[34m"
+	c_purple="\033[35m"
+	c_cyan="\033[36m"
+	c_sgr0="\033[0m"
 fi
 
 # Define enhancers for easy future-external customization
@@ -52,156 +52,156 @@ export ENHANCERS=('gitify')
 gitify ()
 {
 
-    # Check GIT_PROMPT_ON before running git status check
-    if [ "$GIT_PROMPT_ON" = true ]
-    then
+	# Check GIT_PROMPT_ON before running git status check
+	if [ "$GIT_PROMPT_ON" = true ]
+	then
 
-        # Verify we are in a git repo
-        git_works=$(git branch 2>/dev/null)
+		# Verify we are in a git repo
+		git_works=$(git branch 2>/dev/null)
 
-        # If no error occurred assume we are inside a repo
-        if [ $? -eq 0 ]
-        then
+		# If no error occurred assume we are inside a repo
+		if [ $? -eq 0 ]
+		then
 
-            # Acquire the branch name
-            git_branch=$(echo "${git_works}" | sed -n 's/^\*[ ]*//p')
+			# Acquire the branch name
+			git_branch=$(echo "${git_works}" | sed -n 's/^\*[ ]*//p')
 
-            # if branch name is (no branch) get commit hash instead
-            if [ "${git_branch}" == "(no branch)" ]
-            then
-                git_branch=$(git rev-parse --verify --short HEAD 2>/dev/null)
-            fi
+			# if branch name is (no branch) get commit hash instead
+			if [ "${git_branch}" == "(no branch)" ]
+			then
+				git_branch=$(git rev-parse --verify --short HEAD 2>/dev/null)
+			fi
 
-            if [ "$GIT_PROMPT_BRANCH_ONLY" = true ]
-            then
+			if [ "$GIT_PROMPT_BRANCH_ONLY" = true ]
+			then
 
-                # Append branch only
-                prompt_string="${prompt_string} [${git_branch}]"
-            else
+				# Append branch only
+				prompt_string="${prompt_string} [${git_branch}]"
+			else
 
-                # Acquire git status
-                git_stats=$(git status --porcelain --untracked-files=all 2>/dev/null)
+				# Acquire git status
+				git_stats=$(git status --porcelain --untracked-files=all 2>/dev/null)
 
-                # Get count of changes from git_stats
-                git_changes=$(echo "${git_stats}" | sed '/^\s*$/d' | wc -l)
+				# Get count of changes from git_stats
+				git_changes=$(echo "${git_stats}" | sed '/^\s*$/d' | wc -l)
 
-                # If no changes print branch only
-                if [ $git_changes -gt 0 ]
-                then
+				# If no changes print branch only
+				if [ $git_changes -gt 0 ]
+				then
 
-                    # Append branch with red color to prompt string
-                    prompt_string="${prompt_string} [${c_red}${git_branch}${c_sgr0}"
+					# Append branch with red color to prompt string
+					prompt_string="${prompt_string} [${c_red}${git_branch}${c_sgr0}"
 
-                    # Do we want to print detailed?
-                    if [ "$GIT_PROMPT_DETAILED" = true ]
-                    then
+					# Do we want to print detailed?
+					if [ "$GIT_PROMPT_DETAILED" = true ]
+					then
 
-                        # Currently this script only attends to:
-                        #   untracked files
-                        #   new files
-                        #   renamed files
-                        #   modified files
-                        #   deleted filesd
-                        # it will not count anything it cannot identify
-                        # it will not show branch conflicts (eg both*)
-                        # it **will** show unstaged and staged independently (if both exist)
-                        #  Format: u# a# r# m#/# d#/#
+						# Currently this script only attends to:
+						#   untracked files
+						#   new files
+						#   renamed files
+						#   modified files
+						#   deleted filesd
+						# it will not count anything it cannot identify
+						# it will not show branch conflicts (eg both*)
+						# it **will** show unstaged and staged independently (if both exist)
+						#  Format: u# a# r# m#/# d#/#
 
-                        # Parse known types for detailed output
-                        untracked_count=$(echo "${git_stats}" | grep -ce "^??")
-                        new_file_count=$(echo "${git_stats}" | grep -ce "^A ")
-                        renamed_count=$(echo "${git_stats}" | grep -ce "^R ")
-                        modified_staged_count=$(echo "${git_stats}" | grep -ce "^M ")
-                        modified_unstaged_count=$(echo "${git_stats}" | grep -ce "^ M")
-                        deleted_staged_count=$(echo "${git_stats}" | grep -ce "^D ")
-                        deleted_unstaged_count=$(echo "${git_stats}" | grep -ce "^ D")
+						# Parse known types for detailed output
+						untracked_count=$(echo "${git_stats}" | grep -ce "^??")
+						new_file_count=$(echo "${git_stats}" | grep -ce "^A ")
+						renamed_count=$(echo "${git_stats}" | grep -ce "^R ")
+						modified_staged_count=$(echo "${git_stats}" | grep -ce "^M ")
+						modified_unstaged_count=$(echo "${git_stats}" | grep -ce "^ M")
+						deleted_staged_count=$(echo "${git_stats}" | grep -ce "^D ")
+						deleted_unstaged_count=$(echo "${git_stats}" | grep -ce "^ D")
 
-                        # Appending the contents below
-                        # This process is exceedingly tedius
-                        # if a better approach is found it
-                        # should be implemented
+						# Appending the contents below
+						# This process is exceedingly tedius
+						# if a better approach is found it
+						# should be implemented
 
-                        # If our total counts are gt 0, append colon prefix
-                        [[ $(expr $untracked_count + $new_file_count + $renamed_count + $modified_staged_count + $modified_unstaged_count + $deleted_staged_count + $deleted_unstaged_count) -gt 0 ]] && prompt_string="${prompt_string}:"
+						# If our total counts are gt 0, append colon prefix
+						[[ $(expr $untracked_count + $new_file_count + $renamed_count + $modified_staged_count + $modified_unstaged_count + $deleted_staged_count + $deleted_unstaged_count) -gt 0 ]] && prompt_string="${prompt_string}:"
 
-                        # If we have untracked items, append
-                        [[ $untracked_count -gt 0 ]] && prompt_string="${prompt_string} ${c_red}u${untracked_count}${c_sgr0}"
+						# If we have untracked items, append
+						[[ $untracked_count -gt 0 ]] && prompt_string="${prompt_string} ${c_red}u${untracked_count}${c_sgr0}"
 
-                        # If we have staged added files, append (unstaged == untracked)
-                        [[ $new_file_count -gt 0 ]] && prompt_string="${prompt_string} ${c_green}a${new_file_count}${c_sgr0}"
+						# If we have staged added files, append (unstaged == untracked)
+						[[ $new_file_count -gt 0 ]] && prompt_string="${prompt_string} ${c_green}a${new_file_count}${c_sgr0}"
 
-                        # If we have staged renamed files, append (unstaged is a combination of untracked & deleted)
-                        [[ $renamed_count -gt 0 ]] && prompt_string="${prompt_string} ${c_green}r${renamed_count}${c_sgr0}"
+						# If we have staged renamed files, append (unstaged is a combination of untracked & deleted)
+						[[ $renamed_count -gt 0 ]] && prompt_string="${prompt_string} ${c_green}r${renamed_count}${c_sgr0}"
 
-                        # If we have modifications, append header
-                        [[ $modified_unstaged_count -gt 0 ]] || [[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string} ${c_red}m${c_sgr0}"
+						# If we have modifications, append header
+						[[ $modified_unstaged_count -gt 0 ]] || [[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string} ${c_red}m${c_sgr0}"
 
-                        # If we have modified unstaged, append red count
-                        [[ $modified_unstaged_count -gt 0 ]] && prompt_string="${prompt_string}${c_red}${modified_unstaged_count}${c_sgr0}" && [[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string}/"
+						# If we have modified unstaged, append red count
+						[[ $modified_unstaged_count -gt 0 ]] && prompt_string="${prompt_string}${c_red}${modified_unstaged_count}${c_sgr0}" && [[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string}/"
 
-                        # If we have modified staged, append green count
-                        [[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string}${c_green}${modified_staged_count}${c_sgr0}"
+						# If we have modified staged, append green count
+						[[ $modified_staged_count -gt 0 ]] && prompt_string="${prompt_string}${c_green}${modified_staged_count}${c_sgr0}"
 
-                        # If we have deletions, append header
-                        [[ $deleted_unstaged_count -gt 0 ]] || [[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string} ${c_red}d${c_sgr0}"
+						# If we have deletions, append header
+						[[ $deleted_unstaged_count -gt 0 ]] || [[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string} ${c_red}d${c_sgr0}"
 
-                        # If we have deleted unstaged, append red count
-                        [[ $deleted_unstaged_count -gt 0 ]] && prompt_string="${prompt_string}${c_red}${deleted_unstaged_count}${c_sgr0}" && [[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string}/"
+						# If we have deleted unstaged, append red count
+						[[ $deleted_unstaged_count -gt 0 ]] && prompt_string="${prompt_string}${c_red}${deleted_unstaged_count}${c_sgr0}" && [[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string}/"
 
-                        # If we have deleted staged, append green count
-                        [[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string}${c_green}${deleted_staged_count}${c_sgr0}"
+						# If we have deleted staged, append green count
+						[[ $deleted_staged_count -gt 0 ]] && prompt_string="${prompt_string}${c_green}${deleted_staged_count}${c_sgr0}"
 
-                        # Close prompt
-                        prompt_string="${prompt_string}]"
-                    else
+						# Close prompt
+						prompt_string="${prompt_string}]"
+					else
 
-                        # Append count & close branch
-                        prompt_string="${prompt_string}: ${c_red}${git_changes}${c_sgr0}]"
-                    fi
-                else
-                    prompt_string="${prompt_string} [${c_green}${git_branch}${c_sgr0}]"
-                fi
-            fi
-        fi
-    fi
+						# Append count & close branch
+						prompt_string="${prompt_string}: ${c_red}${git_changes}${c_sgr0}]"
+					fi
+				else
+					prompt_string="${prompt_string} [${c_green}${git_branch}${c_sgr0}]"
+				fi
+			fi
+		fi
+	fi
 }
 
 # Create a colorful detailed prompt
 colorify ()
 {
-    # Confirm enhanced prompt
-    if [ "$ENHANCED_PROMPT" = true ]
-    then
+	# Confirm enhanced prompt
+	if [ "$ENHANCED_PROMPT" = true ]
+	then
 
-        # If Linux display milliseconds (OSX does not support %N `data`, neither does Windows git-bash)
-        # If Linux display milliseconds (OSX does not support %N `data`)
-        if [ $(uname) = "Darwin" ]
-        then
-            prompt_string="${c_blue}${0} ($(date +'%R:%S')) ${c_purple}$(whoami)${c_sgr0}@${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
-        elif [[ $(uname) == MINGW* ]]
-        then
-            # windows git-bash compatible PS1
-            prompt_string="${c_blue}($(date +'%R:%S')) ${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
-        else
-            prompt_string="${c_blue}${0} ($(date +'%R:%S.%3N')) ${c_purple}$(whoami)${c_sgr0}@${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
-        fi
+		# If Linux display milliseconds (OSX does not support %N `data`, neither does Windows git-bash)
+		# If Linux display milliseconds (OSX does not support %N `data`)
+		if [ $(uname) = "Darwin" ]
+		then
+			prompt_string="${c_blue}${0} ($(date +'%R:%S')) ${c_purple}$(whoami)${c_sgr0}@${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
+		elif [[ $(uname) == MINGW* ]]
+		then
+			# windows git-bash compatible PS1
+			prompt_string="${c_blue}($(date +'%R:%S')) ${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
+		else
+			prompt_string="${c_blue}${0} ($(date +'%R:%S.%3N')) ${c_purple}$(whoami)${c_sgr0}@${c_green}$(hostname) ${c_bold}${c_blue}$(dirs)${c_sgr0}"
+		fi
 
-        # Run through Enhancers
-        for ENHANCEMENT in ${ENHANCERS[*]}
-        do
-            [[ $(type -t $ENHANCEMENT) = 'function' ]] && $ENHANCEMENT
-        done
+		# Run through Enhancers
+		for ENHANCEMENT in ${ENHANCERS[*]}
+		do
+			[[ $(type -t $ENHANCEMENT) = 'function' ]] && $ENHANCEMENT
+		done
 
-        # Output custom prompt
-        echo -ne "\n${prompt_string}"
+		# Output custom prompt
+		echo -ne "\n${prompt_string}"
 
-        # Start prompt on new line
-        echo -ne "\n$ "
-    else
+		# Start prompt on new line
+		echo -ne "\n$ "
+	else
 
-        # Reset prompt to the original if it was ever modified
-        [[ -n "${PSORIG}" ]] && PS1=${PSORIG}
-    fi
+		# Reset prompt to the original if it was ever modified
+		[[ -n "${PSORIG}" ]] && PS1=${PSORIG}
+	fi
 }
 
 # Grab the original
