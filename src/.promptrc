@@ -19,25 +19,13 @@
 #
 
 # Define color functions for enhanced terminal aesthetics
-if which tput &> /dev/null
-then
-	c_bold=`tput bold`
-	c_red=`tput setaf 1`
-	c_green=`tput setaf 2`
-	c_blue=`tput setaf 4`
-	c_purple=`tput setaf 5`
-	c_cyan=`tput setaf 6`
-	c_sgr0=`tput sgr0`
-else
-	# for windows compatibility
-	c_bold="\033[1m"
-	c_red="\033[31m"
-	c_green="\033[32m"
-	c_blue="\033[34m"
-	c_purple="\033[35m"
-	c_cyan="\033[36m"
-	c_sgr0="\033[0m"
-fi
+c_bold="\033[1m"
+c_red="\033[31m"
+c_green="\033[32m"
+c_blue="\033[34m"
+c_purple="\033[35m"
+c_cyan="\033[36m"
+c_sgr0="\033[0m"
 
 # Define enhancers for easy future-external customization
 export ENHANCERS=('gitify')
