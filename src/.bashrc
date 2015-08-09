@@ -58,7 +58,7 @@ then
 	alias ls='ls -FGA'
 	chflags nohidden "$HOME/Library"
 else
-	alias ls='ls -hFA --color=auto'
+	alias ls='ls -vhFA --color=auto'
 	alias lue='find . -type f | perl -ne "print \$1 if m/\.([^.\/]+)$/" | sort -u'
 fi
 alias grep='grep --color=auto'
