@@ -69,11 +69,12 @@ alias ..='cd ..'
 alias sshfs='sshfs -o cache=yes,compression=yes,large_read,kernel_cache'
 
 # load ssh keys on first-run (will prompt for passwords)
+export SSH_AUTH_SOCK=~/.ssh/socket
 ssh-add -l &>/dev/null
 sshout=$?
 if [ $sshout -eq 2 ]
 then
-	eval $(ssh-agent) &>/dev/null
+	eval $(ssh-agent -a $SSH_AUTH_SOCK) &>/dev/null
 	ssh-add
 elif [ $sshout -eq 1 ]
 then
