@@ -74,9 +74,10 @@ ssh-add -l &>/dev/null
 sshout=$?
 if [ $sshout -eq 2 ]
 then
-	eval $(ssh-agent -a $SSH_AUTH_SOCK) &>/dev/null
-	ssh-add
+	eval $(ssh-agent -a $SSH_AUTH_SOCK 2>/dev/null) &>/dev/null
+	ssh-add 2>/dev/null
 elif [ $sshout -eq 1 ]
 then
-	ssh-add
+	ssh-add2>/dev/null
 fi
+
