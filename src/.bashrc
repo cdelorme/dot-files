@@ -79,6 +79,6 @@ then
 	ssh-add 2>/dev/null
 elif [ $sshout -eq 1 ]
 then
-	ssh-add2>/dev/null
+	ssh-add 2>/dev/null
 fi
 
