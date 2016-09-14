@@ -10,7 +10,7 @@ The intention of these files are to enhance your terminal experience and product
 
 **If you are looking for full-stack automation that sets up a bunch of tools and configures them, then you want to check out my [system-setup repository](https://www.github.com/cdelorme/system-setup).**
 
-These are plain test configuration files that can be copied into your home folder (`$HOME` or `~/`) on linux or osx (mac).  They are (mostly) compatible with windows using [git-scm's git-bash](http://git-scm.com/).
+These are plain text configuration files that can be copied into your home folder (`$HOME` or `~/`) on linux or osx (mac).  They are (mostly) compatible with windows using [git-scm's git-bash](http://git-scm.com/).
 
 The configuration files are loaded when you open a new terminal, and enhance:
 
