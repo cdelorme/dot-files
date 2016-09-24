@@ -15,3 +15,5 @@
 	sa = stash apply
 	l = !. ~/.githelpers && vgl
 	pp = !git pull && git push
+[url "git@github.com:"]
+	insteadOf = https://github.com/
