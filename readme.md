@@ -61,3 +61,9 @@ If `git` is available, it will clone the repository instead (faster and more rel
 Simply launch a new terminal and it will automatically load the installed shell files.
 
 Services that depend on configuration files will find them in your home folder automatically.
+
+
+# references
+
+- [colorful man pages](http://boredzo.org/blog/archives/2016-08-15/colorized-man-pages-understood-and-customized)
+- [global git hooks](https://coderwall.com/p/jp7d5q/create-a-global-git-commit-hook)
