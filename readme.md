@@ -46,7 +46,7 @@ For a silent install without sub-shells pass the file directly to bash with `-s 
 
 Or `wget` you can use this approach to see the confirmation:
 
-    bash <(wget --no-check-certificate -qO- "https://raw.githubusercontent.com/cdelorme/dot-files/master/install")
+	bash <(wget --no-check-certificate -qO- "https://raw.githubusercontent.com/cdelorme/dot-files/master/install")
 
 
 ### dependencies

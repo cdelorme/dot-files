@@ -3,30 +3,30 @@
 # check local, for git, then fallback to direct downloads
 if [ -d src/ ]
 then
-    mkdir -p /tmp/dot-files/src && find src -mindepth 1 -maxdepth 1 -exec cp -R {} /tmp/dot-files/src/ \;
+	mkdir -p /tmp/dot-files/src && find src -mindepth 1 -maxdepth 1 -exec cp -R {} /tmp/dot-files/src/ \;
 elif which git &>/dev/null
 then
-    git clone https://github.com/cdelorme/dot-files /tmp/dot-files
+	git clone https://github.com/cdelorme/dot-files /tmp/dot-files
 else
-    dotfiles=(".bash_logout" ".bash_profile" ".bashrc" ".gitconfig" ".githelpers" ".gitignore" ".promptrc" ".ssh/config" ".tmux.conf" ".vimrc")
+	dotfiles=(".bash_logout" ".bash_profile" ".bashrc" ".gitconfig" ".githelpers" ".gitignore" ".promptrc" ".ssh/config" ".tmux.conf" ".vimrc")
 
-    # prepare temporary directory (and ssh folder)
-    mkdir -p /tmp/dot-files/src/.ssh
+	# prepare temporary directory (and ssh folder)
+	mkdir -p /tmp/dot-files/src/.ssh
 
-    # determine available download command
-    if which curl &> /dev/null
-    then
-        dlcmd="curl -Lo"
-    elif which wget &> /dev/null
-    then
-        dlcmd="wget --no-check-certificate -O"
-    fi
+	# determine available download command
+	if which curl &> /dev/null
+	then
+		dlcmd="curl -Lo"
+	elif which wget &> /dev/null
+	then
+		dlcmd="wget --no-check-certificate -O"
+	fi
 
-    # download each explicitly
-    for f in ${dotfiles[*]}
-    do
-        $dlcmd "/tmp/dot-files/src/${f}" "https://raw.githubusercontent.com/cdelorme/dot-files/master/src/${f}"
-    done
+	# download each explicitly
+	for f in ${dotfiles[*]}
+	do
+		$dlcmd "/tmp/dot-files/src/${f}" "https://raw.githubusercontent.com/cdelorme/dot-files/master/src/${f}"
+	done
 fi
 
 # prepare vim directories
@@ -35,19 +35,19 @@ mkdir -p /tmp/dot-files/src/.vim/{undo,doc}
 # silent install or request confirmation
 if [ "$1" == "-q" ]
 then
-    agree="y"
+	agree="y"
 else
-    while [ "$agree" != "y" ] && [ "$agree" != "n" ]
-    do
-        read -p "are you sure you want to install dot-files? (y|n): " agree
-    done
+	while [ "$agree" != "y" ] && [ "$agree" != "n" ]
+	do
+		read -p "are you sure you want to install dot-files? (y|n): " agree
+	done
 fi
 
 # install the files
 if [ "$agree" = "y" ]
 then
-    find /tmp/dot-files/src -mindepth 1 -maxdepth 1 -exec cp -R {} ~/ \;
-    [ $(id -u) -eq 0 ] && [ -d /etc/skel ] && find /tmp/dot-files/src -mindepth 1 -maxdepth 1 -exec cp -R {} /etc/skel/ \;
+	find /tmp/dot-files/src -mindepth 1 -maxdepth 1 -exec cp -R {} ~/ \;
+	[ $(id -u) -eq 0 ] && [ -d /etc/skel ] && find /tmp/dot-files/src -mindepth 1 -maxdepth 1 -exec cp -R {} /etc/skel/ \;
 fi
 
 exit 0
