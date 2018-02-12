@@ -82,11 +82,11 @@ man() {
 
 # load ssh keys on first-run (will prompt for passwords)
 ssh-add -l &> /dev/null; sshout=$?
-[ $sshout -eq 0 ] || export SSH_AUTH_SOCK=~/.ssh/socket
 if [ $sshout -eq 2 ]; then
-	rm -f $SSH_AUTH_SOCK
-	eval $(ssh-agent -a $SSH_AUTH_SOCK 2> /dev/null) &> /dev/null
-	ssh-add 2> /dev/null
-elif [ $sshout -eq 1 ]; then
-	ssh-add 2> /dev/null
+	export SSH_AUTH_SOCK=~/.ssh/socket
+	if ! ssh-add -l &> /dev/null; then
+		rm -f $SSH_AUTH_SOCK
+		eval $(ssh-agent -a $SSH_AUTH_SOCK 2> /dev/null) &> /dev/null
+	fi
 fi
+ssh-add 2> /dev/null
