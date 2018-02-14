@@ -84,7 +84,7 @@ man() {
 ssh-add -l &> /dev/null; sshout=$?
 if [ $sshout -eq 2 ]; then
 	export SSH_AUTH_SOCK=~/.ssh/socket
-	if ! ssh-add -l &> /dev/null; then
+	if ssh-add -l &> /dev/null || [ $? -eq 2 ]; then
 		rm -f $SSH_AUTH_SOCK
 		eval $(ssh-agent -a $SSH_AUTH_SOCK 2> /dev/null) &> /dev/null
 	fi
